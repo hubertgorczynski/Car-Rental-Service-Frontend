@@ -1,4 +1,4 @@
-package com.carRental.views.car;
+package com.carRental.views.user;
 
 import com.carRental.client.UserClient;
 import com.carRental.domain.UserDto;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class UserView extends VerticalLayout {
+public class UsersView extends VerticalLayout {
 
     private final Grid<UserDto> userGrid = new Grid<>(UserDto.class);
     private final UserClient userClient;
 
     @Autowired
-    public UserView(UserClient userClient) {
+    public UsersView(UserClient userClient) {
         this.userClient = userClient;
 
         Button addUserButton = new Button("Add new user");

@@ -1,4 +1,4 @@
-package com.carRental.views.car;
+package com.carRental.views.rental;
 
 import com.carRental.client.RentalClient;
 import com.carRental.domain.RentalComplexDto;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class RentalView extends VerticalLayout {
+public class RentalsView extends VerticalLayout {
 
     private final Grid<RentalComplexDto> rentalGrid = new Grid<>(RentalComplexDto.class);
     private final RentalClient rentalClient;
 
     @Autowired
-    public RentalView(RentalClient rentalClient) {
+    public RentalsView(RentalClient rentalClient) {
         this.rentalClient = rentalClient;
 
         Button addRentalButton = new Button("Add new rental");

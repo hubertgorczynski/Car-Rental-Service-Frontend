@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class CarView extends VerticalLayout {
+public class CarsView extends VerticalLayout {
 
     private final Grid<CarDto> carGrid = new Grid<>(CarDto.class);
     private final CarClient carClient;
 
     @Autowired
-    public CarView(CarClient carClient) {
+    public CarsView(CarClient carClient) {
         this.carClient = carClient;
 
         Button addCarButton = new Button("Add new car");
