@@ -1,7 +1,7 @@
 package com.carRental.client;
 
 import com.carRental.config.BackEndConfiguration;
-import com.carRental.domain.CarDto;
+import com.carRental.domain.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -16,7 +16,7 @@ import java.util.List;
 import static java.util.Optional.ofNullable;
 
 @Component
-public class CarClient {
+public class UserClient {
 
     @Autowired
     private RestTemplate restTemplate;
@@ -24,11 +24,11 @@ public class CarClient {
     @Autowired
     private BackEndConfiguration backEndConfiguration;
 
-    public List<CarDto> getCars() {
+    public List<UserDto> getUsers() {
         try {
-            URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getCarEndpoint()).build().encode().toUri();
-            CarDto[] response = restTemplate.getForObject(url, CarDto[].class);
-            return Arrays.asList(ofNullable(response).orElse(new CarDto[0]));
+            URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint()).build().encode().toUri();
+            UserDto[] response = restTemplate.getForObject(url, UserDto[].class);
+            return Arrays.asList(ofNullable(response).orElse(new UserDto[0]));
         } catch (RestClientException e) {
             return new ArrayList<>();
         }

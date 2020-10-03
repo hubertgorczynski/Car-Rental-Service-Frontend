@@ -1,8 +1,9 @@
 package com.carRental.views;
 
 import com.carRental.views.car.CarView;
+import com.carRental.views.car.RentalView;
+import com.carRental.views.car.UserView;
 import com.carRental.views.utils.PagedTabs;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +14,19 @@ import org.springframework.stereotype.Component;
 public class MainView extends VerticalLayout {
 
     private final CarView carView;
+    private final UserView userView;
+    private final RentalView rentalView;
 
     @Autowired
-    public MainView(CarView carView) {
+    public MainView(CarView carView, UserView userView, RentalView rentalView) {
         this.carView = carView;
-
-        Button button3 = new Button("Click3");
+        this.userView = userView;
+        this.rentalView = rentalView;
 
         PagedTabs tabs = new PagedTabs();
         tabs.add(carView, "Cars");
-        tabs.add(button3, "Tab caption 2");
+        tabs.add(userView, "Users");
+        tabs.add(rentalView, "Rentals");
 
         add(tabs);
     }
