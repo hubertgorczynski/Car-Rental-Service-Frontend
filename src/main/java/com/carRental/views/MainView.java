@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@Route
+@Route(value = "mainView")
 public class MainView extends VerticalLayout {
 
     private final CarsView carsView;
