@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class RegistrationView extends VerticalLayout {
 
     private final UserClient userClient;
-    private UserDto userDto;
 
     private Binder<UserDto> binder = new Binder<>();
     private TextField name = new TextField("Name");
@@ -23,11 +22,11 @@ public class RegistrationView extends VerticalLayout {
     private PasswordField password = new PasswordField("Password");
     private IntegerField phoneNumber = new IntegerField("Phone number");
 
-    private Button alreadyRegisteredButton = new Button("I have account. Log me in.");
+    private Button loginButton = new Button("I have account. Log me in.");
     private Button registerButton = new Button("Register");
 
     @Autowired
-    public RegistrationView(UserClient userClient){
+    public RegistrationView(UserClient userClient) {
         this.userClient = userClient;
 
         Span formTitle = new Span("Registration");
@@ -43,10 +42,28 @@ public class RegistrationView extends VerticalLayout {
         binder.forField(phoneNumber)
                 .bind(UserDto::getPhoneNumber, UserDto::setPhoneNumber);
 
-        alreadyRegisteredButton.addClickListener(e -> getUI().get().navigate("mainView"));
+        loginButton.addClickListener(e -> getUI().get().navigate("mainView"));
 
-        add(formTitle, name, lastName, email, password, phoneNumber, alreadyRegisteredButton, registerButton);
+        registerButton.addClickListener(e -> {
+            save();
+            getUI().get().navigate("mainView");
+        });
+
+        add(formTitle, name, lastName, email, password, phoneNumber, loginButton, registerButton);
         setHorizontalComponentAlignment(Alignment.CENTER, formTitle, name, lastName, email, password, phoneNumber,
-                alreadyRegisteredButton, registerButton);
+                loginButton, registerButton);
+    }
+
+    private void save() {
+        UserDto userDto = new UserDto();
+        userDto.setName(name.getValue());
+        userDto.setLastName(lastName.getValue());
+        userDto.setEmail(email.getValue());
+        userDto.setPassword(password.getValue());
+        userDto.setPhoneNumber(phoneNumber.getValue());
+
+        if (!userClient.isUserRegistered(userDto.getEmail())) {
+            userClient.registerUser(userDto);
+        }
     }
 }

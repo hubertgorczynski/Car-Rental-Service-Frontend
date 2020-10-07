@@ -26,11 +26,25 @@ public class UserClient {
 
     public List<UserDto> getUsers() {
         try {
-            URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint()).build().encode().toUri();
+            URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint())
+                    .build().encode().toUri();
             UserDto[] response = restTemplate.getForObject(url, UserDto[].class);
             return Arrays.asList(ofNullable(response).orElse(new UserDto[0]));
         } catch (RestClientException e) {
             return new ArrayList<>();
         }
+    }
+
+    public void registerUser(UserDto userDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint())
+                .build().encode().toUri();
+        restTemplate.postForObject(url, userDto, UserDto.class);
+    }
+
+    public Boolean isUserRegistered(String email) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint() + "/is_user_registered")
+                .queryParam("email", email)
+                .build().encode().toUri();
+        return restTemplate.getForObject(url, Boolean.class);
     }
 }
