@@ -34,9 +34,11 @@ public class RentalsView extends VerticalLayout {
                 "userEmail",
                 "userPhoneNumber");
 
+        add(addRentalButton, rentalGrid);
+    }
+
+    public void refreshRentals() {
         List<RentalComplexDto> rentals = rentalClient.getRentals();
         rentalGrid.setItems(rentals);
-
-        add(addRentalButton, rentalGrid);
     }
 }

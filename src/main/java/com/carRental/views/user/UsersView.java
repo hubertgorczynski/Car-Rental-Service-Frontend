@@ -31,9 +31,11 @@ public class UsersView extends VerticalLayout {
                 "phoneNumber",
                 "accountCreated");
 
+        add(addUserButton, userGrid);
+    }
+
+    public void refreshUsers() {
         List<UserDto> users = userClient.getUsers();
         userGrid.setItems(users);
-
-        add(addUserButton, userGrid);
     }
 }

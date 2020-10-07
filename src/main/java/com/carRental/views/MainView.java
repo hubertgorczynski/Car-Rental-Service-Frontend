@@ -1,7 +1,6 @@
 package com.carRental.views;
 
 import com.carRental.views.car.CarsView;
-import com.carRental.views.access.LoginView;
 import com.carRental.views.access.LogoutView;
 import com.carRental.views.rental.RentalsView;
 import com.carRental.views.user.UsersView;
@@ -19,36 +18,42 @@ public class MainView extends VerticalLayout {
     private final CarsView carsView;
     private final UsersView usersView;
     private final RentalsView rentalsView;
-    private final LoginView loginView;
     private final LogoutView logoutView;
 
+    PagedTabs tabs = new PagedTabs();
+    Tab carsTab = new Tab("Cars");
+    Tab usersTab = new Tab("Users");
+    Tab rentalsTab = new Tab("Rentals");
+    Tab logoutTab = new Tab("Logout");
+
     @Autowired
-    public MainView(CarsView carsView, UsersView usersView, RentalsView rentalsView, LoginView loginView,
-                    LogoutView logoutView) {
+    public MainView(CarsView carsView, UsersView usersView, RentalsView rentalsView, LogoutView logoutView) {
         this.carsView = carsView;
         this.usersView = usersView;
         this.rentalsView = rentalsView;
-        this.loginView = loginView;
         this.logoutView = logoutView;
 
-        PagedTabs tabs = new PagedTabs();
-        Tab carsTab = new Tab("Cars");
-        Tab usersTab = new Tab("Users");
-        Tab rentalsTab = new Tab("Rentals");
-        Tab loginTab = new Tab("Login");
-        Tab logoutTab = new Tab("Logout");
-
-        tabs.add(loginView, loginTab);
         tabs.add(carsView, carsTab);
         tabs.add(usersView, usersTab);
         tabs.add(rentalsView, rentalsTab);
         tabs.add(logoutView, logoutTab);
 
-        carsTab.setEnabled(true);
+        add(tabs);
+    }
+
+    public void refresh() {
+        carsView.refreshCars();
+        usersView.refreshUsers();
+        rentalsView.refreshRentals();
+    }
+
+    public void setBackStartingTab() {
+        tabs.select(carsTab);
+    }
+
+    public void userViewSetup() {
+        carsView.refreshCars();
         usersTab.setEnabled(false);
         rentalsTab.setEnabled(false);
-        logoutTab.setEnabled(false);
-
-        add(tabs);
     }
 }

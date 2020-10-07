@@ -17,6 +17,9 @@ public class BackEndConfiguration {
     @Value("${user.api.endpoint}")
     private String userEndpoint;
 
+    @Value("${login.api.endpoint}")
+    private String loginEndpoint;
+
     @Value("${vinDecoder.api.endpoint}")
     private String vinDecoderEndpoint;
 

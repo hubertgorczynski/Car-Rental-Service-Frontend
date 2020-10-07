@@ -35,9 +35,11 @@ public class CarsView extends VerticalLayout {
                 "costPerDay",
                 "status");
 
-        List<CarDto> carDtoList = carClient.getCars();
-        carGrid.setItems(carDtoList);
-
         add(addCarButton, carGrid);
+    }
+
+    public void refreshCars() {
+        List<CarDto> cars = carClient.getCars();
+        carGrid.setItems(cars);
     }
 }

@@ -15,5 +15,10 @@ public class LogoutView extends VerticalLayout {
 
         add(button);
         setHorizontalComponentAlignment(Alignment.CENTER, button);
+        button.addClickListener(e -> logOut());
+    }
+
+    private void logOut() {
+        getUI().get().navigate("loginView");
     }
 }

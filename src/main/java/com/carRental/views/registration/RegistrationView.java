@@ -9,12 +9,13 @@ import com.vaadin.flow.component.textfield.*;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Route(value = "registration")
+@Component
+@Route(value = "registrationView")
 public class RegistrationView extends VerticalLayout {
 
     private final UserClient userClient;
-
     private Binder<UserDto> binder = new Binder<>();
     private TextField name = new TextField("Name");
     private TextField lastName = new TextField("Last name");
@@ -42,11 +43,12 @@ public class RegistrationView extends VerticalLayout {
         binder.forField(phoneNumber)
                 .bind(UserDto::getPhoneNumber, UserDto::setPhoneNumber);
 
-        loginButton.addClickListener(e -> getUI().get().navigate("mainView"));
+        loginButton.addClickListener(e ->
+                getUI().get().navigate("loginView"));
 
         registerButton.addClickListener(e -> {
             save();
-            getUI().get().navigate("mainView");
+            getUI().get().navigate("loginView");
         });
 
         add(formTitle, name, lastName, email, password, phoneNumber, loginButton, registerButton);
@@ -64,6 +66,8 @@ public class RegistrationView extends VerticalLayout {
 
         if (!userClient.isUserRegistered(userDto.getEmail())) {
             userClient.registerUser(userDto);
+        } else {
+            System.out.println("User is already registered");
         }
     }
 }
