@@ -1,7 +1,9 @@
 package com.carRental.views.access;
 
 import com.carRental.client.LoginClient;
+import com.carRental.client.UserClient;
 import com.carRental.domain.LoginDto;
+import com.carRental.domain.UserDto;
 import com.carRental.views.MainView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,16 +20,19 @@ public class LoginView extends VerticalLayout {
 
     private final MainView mainView;
     private final LoginClient loginClient;
+    private final UserClient userClient;
     private EmailField email = new EmailField("E-mail address");
     private PasswordField password = new PasswordField("Password");
     private Button logIn = new Button("Log in");
     private Button register = new Button("You don't have account? Create it here.");
     private Binder<LoginDto> binder = new Binder<>();
+    private UserDto userDto;
 
     @Autowired
-    public LoginView(MainView mainView, LoginClient loginClient) {
+    public LoginView(MainView mainView, LoginClient loginClient, UserClient userClient) {
         this.mainView = mainView;
         this.loginClient = loginClient;
+        this.userClient = userClient;
 
         add(email, password, logIn, register);
         setHorizontalComponentAlignment(Alignment.CENTER, email, password, logIn, register);
@@ -44,16 +49,16 @@ public class LoginView extends VerticalLayout {
 
     private void logIn() {
         LoginDto loginDto = new LoginDto();
-        loginDto.setEmail(email.getValue());
-        loginDto.setPassword(password.getValue());
+        binder.writeBeanIfValid(loginDto);
 
         if (loginDto.getEmail().equals("admin@gmail.com") && (loginDto.getPassword().equals("admin"))) {
-            mainView.refresh();
+            mainView.adminViewSetup();
             mainView.setBackStartingTab();
             getUI().get().navigate("mainView");
         } else {
-            if (loginClient.isLoginRegistered(loginDto.getEmail(), loginDto.getPassword())) {
-                mainView.userViewSetup();
+            if (loginClient.isLoginRegistered(loginDto)) {
+                userDto = userClient.getUserByEmail(loginDto.getEmail());
+                mainView.userViewSetup(userDto);
                 mainView.setBackStartingTab();
                 getUI().get().navigate("mainView");
             } else {

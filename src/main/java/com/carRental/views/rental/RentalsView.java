@@ -2,7 +2,7 @@ package com.carRental.views.rental;
 
 import com.carRental.client.RentalClient;
 import com.carRental.domain.RentalComplexDto;
-import com.vaadin.flow.component.button.Button;
+import com.carRental.domain.UserDto;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,6 @@ public class RentalsView extends VerticalLayout {
     public RentalsView(RentalClient rentalClient) {
         this.rentalClient = rentalClient;
 
-        Button addRentalButton = new Button("Add new rental");
-
         rentalGrid.setColumns(
                 "id",
                 "rentedFrom",
@@ -34,11 +32,16 @@ public class RentalsView extends VerticalLayout {
                 "userEmail",
                 "userPhoneNumber");
 
-        add(addRentalButton, rentalGrid);
+        add(rentalGrid);
     }
 
-    public void refreshRentals() {
+    public void refreshRentalsForAdmin() {
         List<RentalComplexDto> rentals = rentalClient.getRentals();
+        rentalGrid.setItems(rentals);
+    }
+
+    public void refreshRentalsForUser(UserDto userDto) {
+        List<RentalComplexDto> rentals = rentalClient.getRentalsByUserId(userDto.getId());
         rentalGrid.setItems(rentals);
     }
 }

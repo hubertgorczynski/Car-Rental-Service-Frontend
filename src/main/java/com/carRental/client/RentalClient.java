@@ -33,4 +33,15 @@ public class RentalClient {
             return new ArrayList<>();
         }
     }
+
+    public List<RentalComplexDto> getRentalsByUserId(Long userId) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getRentalEndpoint() + "/by_user_id/" + userId)
+                    .build().encode().toUri();
+            RentalComplexDto[] response = restTemplate.getForObject(url, RentalComplexDto[].class);
+            return Arrays.asList(ofNullable(response).orElse(new RentalComplexDto[0]));
+        } catch (RestClientException e) {
+            return new ArrayList<>();
+        }
+    }
 }

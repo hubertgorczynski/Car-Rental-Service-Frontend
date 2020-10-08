@@ -47,4 +47,15 @@ public class UserClient {
                 .build().encode().toUri();
         return restTemplate.getForObject(url, Boolean.class);
     }
+
+    public UserDto getUserByEmail(String email) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint() + "/by_email/" + email)
+                    .build().encode().toUri();
+            UserDto response = restTemplate.getForObject(url, UserDto.class);
+            return ofNullable(response).orElse(new UserDto());
+        } catch (RestClientException e) {
+            return new UserDto();
+        }
+    }
 }

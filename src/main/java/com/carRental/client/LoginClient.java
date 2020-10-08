@@ -1,6 +1,7 @@
 package com.carRental.client;
 
 import com.carRental.config.BackEndConfiguration;
+import com.carRental.domain.LoginDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -17,10 +18,10 @@ public class LoginClient {
     @Autowired
     private BackEndConfiguration backEndConfiguration;
 
-    public Boolean isLoginRegistered(String email, String password) {
+    public Boolean isLoginRegistered(LoginDto loginDto) {
         URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getLoginEndpoint() + "/is_already_registered")
-                .queryParam("email", email)
-                .queryParam("password", password)
+                .queryParam("email", loginDto.getEmail())
+                .queryParam("password", loginDto.getPassword())
                 .build().encode().toUri();
         return restTemplate.getForObject(url, Boolean.class);
     }

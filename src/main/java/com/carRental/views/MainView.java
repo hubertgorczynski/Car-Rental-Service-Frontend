@@ -1,5 +1,6 @@
 package com.carRental.views;
 
+import com.carRental.domain.UserDto;
 import com.carRental.views.car.CarsView;
 import com.carRental.views.access.LogoutView;
 import com.carRental.views.rental.RentalsView;
@@ -41,19 +42,19 @@ public class MainView extends VerticalLayout {
         add(tabs);
     }
 
-    public void refresh() {
+    public void adminViewSetup() {
         carsView.refreshCars();
         usersView.refreshUsers();
-        rentalsView.refreshRentals();
+        rentalsView.refreshRentalsForAdmin();
+    }
+
+    public void userViewSetup(UserDto userDto) {
+        carsView.refreshCars();
+        rentalsView.refreshRentalsForUser(userDto);
+        usersTab.setEnabled(false);
     }
 
     public void setBackStartingTab() {
         tabs.select(carsTab);
-    }
-
-    public void userViewSetup() {
-        carsView.refreshCars();
-        usersTab.setEnabled(false);
-        rentalsTab.setEnabled(false);
     }
 }
