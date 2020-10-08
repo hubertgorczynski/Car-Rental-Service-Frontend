@@ -25,6 +25,7 @@ public class RegistrationView extends VerticalLayout {
 
     private Button loginButton = new Button("I have account. Log me in.");
     private Button registerButton = new Button("Register");
+    private UserDto userDto = new UserDto();
 
     @Autowired
     public RegistrationView(UserClient userClient) {
@@ -47,8 +48,8 @@ public class RegistrationView extends VerticalLayout {
                 getUI().get().navigate("loginView"));
 
         registerButton.addClickListener(e -> {
-            save();
-            getUI().get().navigate("loginView");
+            binder.writeBeanIfValid(userDto);
+            save(userDto);
         });
 
         add(formTitle, name, lastName, email, password, phoneNumber, loginButton, registerButton);
@@ -56,16 +57,10 @@ public class RegistrationView extends VerticalLayout {
                 loginButton, registerButton);
     }
 
-    private void save() {
-        UserDto userDto = new UserDto();
-        userDto.setName(name.getValue());
-        userDto.setLastName(lastName.getValue());
-        userDto.setEmail(email.getValue());
-        userDto.setPassword(password.getValue());
-        userDto.setPhoneNumber(phoneNumber.getValue());
-
+    private void save(UserDto userDto) {
         if (!userClient.isUserRegistered(userDto.getEmail())) {
             userClient.registerUser(userDto);
+            getUI().get().navigate("loginView");
         } else {
             System.out.println("User is already registered");
         }
