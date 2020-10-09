@@ -38,4 +38,14 @@ public class CarClient {
         URI url = UriComponentsBuilder.fromHttpUrl((backEndConfiguration.getCarEndpoint())).build().encode().toUri();
         restTemplate.postForObject(url, carDto, CarDto.class);
     }
+
+    public void updateCar(CarDto carDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getCarEndpoint()).build().encode().toUri();
+        restTemplate.put(url, carDto);
+    }
+
+    public void deleteCar(Long id) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getCarEndpoint() + "/" + id).build().encode().toUri();
+        restTemplate.delete(url);
+    }
 }
