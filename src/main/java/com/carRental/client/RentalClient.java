@@ -2,6 +2,7 @@ package com.carRental.client;
 
 import com.carRental.config.BackEndConfiguration;
 import com.carRental.domain.RentalComplexDto;
+import com.carRental.domain.RentalDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -43,5 +44,10 @@ public class RentalClient {
         } catch (RestClientException e) {
             return new ArrayList<>();
         }
+    }
+
+    public void createRental(RentalDto rentalDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getRentalEndpoint()).build().encode().toUri();
+        restTemplate.postForObject(url, rentalDto, RentalComplexDto.class);
     }
 }

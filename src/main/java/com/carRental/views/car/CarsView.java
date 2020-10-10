@@ -1,7 +1,11 @@
 package com.carRental.views.car;
 
 import com.carRental.client.CarClient;
+import com.carRental.client.RentalClient;
 import com.carRental.domain.CarDto;
+import com.carRental.domain.Status;
+import com.carRental.domain.UserDto;
+import com.carRental.views.rental.RentalsView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -11,6 +15,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,15 +26,17 @@ public class CarsView extends VerticalLayout {
 
     private final Grid<CarDto> carGrid = new Grid<>(CarDto.class);
     private final CarClient carClient;
+    private final RentalClient rentalClient;
+    private final RentalsView rentalsView;
+
     private CarDto carDto = new CarDto();
+    private UserDto loggedUserDto;
     private Long carId;
+
     Button addCarButton = new Button("Add new car");
 
     private Dialog addCarDialog = new Dialog();
-    private Dialog updateCarDialog = new Dialog();
-    private Binder<CarDto> binderForSaving = new Binder<>();
-    private Binder<CarDto> binderForUpdating = new Binder<>();
-
+    private Binder<CarDto> binderForSavingCar = new Binder<>();
     private TextField vin = new TextField("Vin");
     private TextField brand = new TextField("Brand");
     private TextField model = new TextField("Model");
@@ -40,6 +47,8 @@ public class CarsView extends VerticalLayout {
     private IntegerField mileage = new IntegerField("Mileage");
     private BigDecimalField costPerDay = new BigDecimalField("Cost / day");
 
+    private Dialog updateCarDialog = new Dialog();
+    private Binder<CarDto> binderForUpdatingCar = new Binder<>();
     private TextField vinUpdate = new TextField("Vin");
     private TextField brandUpdate = new TextField("Brand");
     private TextField modelUpdate = new TextField("Model");
@@ -51,8 +60,10 @@ public class CarsView extends VerticalLayout {
     private BigDecimalField costPerDayUpdate = new BigDecimalField("Cost / day");
 
     @Autowired
-    public CarsView(CarClient carClient) {
+    public CarsView(CarClient carClient, RentalClient rentalClient, RentalsView rentalsView) {
         this.carClient = carClient;
+        this.rentalClient = rentalClient;
+        this.rentalsView = rentalsView;
 
         bindFields();
 
@@ -60,7 +71,7 @@ public class CarsView extends VerticalLayout {
 
         Button saveCarButton = new Button("Save car");
         saveCarButton.addClickListener(e -> {
-            binderForSaving.writeBeanIfValid(carDto);
+            binderForSavingCar.writeBeanIfValid(carDto);
             saveCar(carDto);
         });
 
@@ -72,18 +83,18 @@ public class CarsView extends VerticalLayout {
 
         Button confirmUpdateButton = new Button("Confirm");
         confirmUpdateButton.addClickListener(e -> {
-            binderForUpdating.writeBeanIfValid(carDto);
+            binderForUpdatingCar.writeBeanIfValid(carDto);
             carDto.setId(carId);
             carClient.updateCar(carDto);
             refreshCarsForAdmin();
             updateCarDialog.close();
         });
 
-        VerticalLayout UpdateCarDialogLayout = new VerticalLayout();
-        UpdateCarDialogLayout.add(vinUpdate, brandUpdate, modelUpdate, productionYearUpdate, fuelTypeUpdate, engineCapacityUpdate,
+        VerticalLayout updateCarDialogLayout = new VerticalLayout();
+        updateCarDialogLayout.add(vinUpdate, brandUpdate, modelUpdate, productionYearUpdate, fuelTypeUpdate, engineCapacityUpdate,
                 bodyClassUpdate, mileageUpdate, costPerDayUpdate, confirmUpdateButton);
         updateCarDialog.isCloseOnOutsideClick();
-        updateCarDialog.add(UpdateCarDialogLayout);
+        updateCarDialog.add(updateCarDialogLayout);
 
         carGrid.setColumns(
                 "id",
@@ -105,12 +116,14 @@ public class CarsView extends VerticalLayout {
     }
 
     public void refreshCarsForAdmin() {
+        loggedUserDto = null;
         addCarButton.setEnabled(true);
         List<CarDto> cars = carClient.getCars();
         carGrid.setItems(cars);
     }
 
-    public void refreshCarsForUser() {
+    public void refreshCarsForUser(UserDto userDto) {
+        loggedUserDto = userDto;
         addCarButton.setEnabled(false);
         List<CarDto> cars = carClient.getCars();
         carGrid.setItems(cars);
@@ -139,9 +152,15 @@ public class CarsView extends VerticalLayout {
         Button updateButton = new Button("Update car");
         updateButton.addClickListener(e -> {
             carId = carDto.getId();
-            binderForUpdating.readBean(carDto);
+            binderForUpdatingCar.readBean(carDto);
             updateCarDialog.open();
         });
+        if (carDto.getStatus().equals(Status.RENTED)) {
+            updateButton.setEnabled(false);
+        }
+        if (loggedUserDto != null) {
+            updateButton.setEnabled(false);
+        }
         return updateButton;
     }
 
@@ -151,46 +170,52 @@ public class CarsView extends VerticalLayout {
             carClient.deleteCar(carDto.getId());
             refreshCarsForAdmin();
         });
+        if (carDto.getStatus().equals(Status.RENTED)) {
+            deleteButton.setEnabled(false);
+        }
+        if (loggedUserDto != null) {
+            deleteButton.setEnabled(false);
+        }
         return deleteButton;
     }
 
     private void bindFields() {
-        binderForSaving.forField(vin)
+        binderForSavingCar.forField(vin)
                 .bind(CarDto::getVin, CarDto::setVin);
-        binderForSaving.forField(brand)
+        binderForSavingCar.forField(brand)
                 .bind(CarDto::getBrand, CarDto::setBrand);
-        binderForSaving.forField(model)
+        binderForSavingCar.forField(model)
                 .bind(CarDto::getModel, CarDto::setModel);
-        binderForSaving.forField(productionYear)
+        binderForSavingCar.forField(productionYear)
                 .bind(CarDto::getProductionYear, CarDto::setProductionYear);
-        binderForSaving.forField(fuelType)
+        binderForSavingCar.forField(fuelType)
                 .bind(CarDto::getFuelType, CarDto::setFuelType);
-        binderForSaving.forField(engineCapacity)
+        binderForSavingCar.forField(engineCapacity)
                 .bind(CarDto::getEngineCapacity, CarDto::setEngineCapacity);
-        binderForSaving.forField(bodyClass)
+        binderForSavingCar.forField(bodyClass)
                 .bind(CarDto::getBodyClass, CarDto::setBodyClass);
-        binderForSaving.forField(mileage)
+        binderForSavingCar.forField(mileage)
                 .bind(CarDto::getMileage, CarDto::setMileage);
-        binderForSaving.forField(costPerDay)
+        binderForSavingCar.forField(costPerDay)
                 .bind(CarDto::getCostPerDay, CarDto::setCostPerDay);
 
-        binderForUpdating.forField(vinUpdate)
+        binderForUpdatingCar.forField(vinUpdate)
                 .bind(CarDto::getVin, CarDto::setVin);
-        binderForUpdating.forField(brandUpdate)
+        binderForUpdatingCar.forField(brandUpdate)
                 .bind(CarDto::getBrand, CarDto::setBrand);
-        binderForUpdating.forField(modelUpdate)
+        binderForUpdatingCar.forField(modelUpdate)
                 .bind(CarDto::getModel, CarDto::setModel);
-        binderForUpdating.forField(productionYearUpdate)
+        binderForUpdatingCar.forField(productionYearUpdate)
                 .bind(CarDto::getProductionYear, CarDto::setProductionYear);
-        binderForUpdating.forField(fuelTypeUpdate)
+        binderForUpdatingCar.forField(fuelTypeUpdate)
                 .bind(CarDto::getFuelType, CarDto::setFuelType);
-        binderForUpdating.forField(engineCapacityUpdate)
+        binderForUpdatingCar.forField(engineCapacityUpdate)
                 .bind(CarDto::getEngineCapacity, CarDto::setEngineCapacity);
-        binderForUpdating.forField(bodyClassUpdate)
+        binderForUpdatingCar.forField(bodyClassUpdate)
                 .bind(CarDto::getBodyClass, CarDto::setBodyClass);
-        binderForUpdating.forField(mileageUpdate)
+        binderForUpdatingCar.forField(mileageUpdate)
                 .bind(CarDto::getMileage, CarDto::setMileage);
-        binderForUpdating.forField(costPerDayUpdate)
+        binderForUpdatingCar.forField(costPerDayUpdate)
                 .bind(CarDto::getCostPerDay, CarDto::setCostPerDay);
     }
 }

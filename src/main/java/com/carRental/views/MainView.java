@@ -27,6 +27,8 @@ public class MainView extends VerticalLayout {
     Tab rentalsTab = new Tab("Rentals");
     Tab logoutTab = new Tab("Logout");
 
+    UserDto loggedUserDto;
+
     @Autowired
     public MainView(CarsView carsView, UsersView usersView, RentalsView rentalsView, LogoutView logoutView) {
         this.carsView = carsView;
@@ -43,6 +45,7 @@ public class MainView extends VerticalLayout {
     }
 
     public void adminViewSetup() {
+        loggedUserDto = null;
         usersTab.setEnabled(true);
         carsView.refreshCarsForAdmin();
         usersView.refreshUsers();
@@ -50,7 +53,8 @@ public class MainView extends VerticalLayout {
     }
 
     public void userViewSetup(UserDto userDto) {
-        carsView.refreshCarsForUser();
+        loggedUserDto = userDto;
+        carsView.refreshCarsForUser(userDto);
         rentalsView.refreshRentalsForUser(userDto);
         usersTab.setEnabled(false);
     }

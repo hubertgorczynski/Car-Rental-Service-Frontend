@@ -50,6 +50,8 @@ public class LoginView extends VerticalLayout {
     private void logIn() {
         LoginDto loginDto = new LoginDto();
         binder.writeBeanIfValid(loginDto);
+        email.clear();
+        password.clear();
 
         if (loginDto.getEmail().equals("admin@gmail.com") && (loginDto.getPassword().equals("admin"))) {
             mainView.adminViewSetup();
