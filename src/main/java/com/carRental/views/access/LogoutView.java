@@ -1,24 +1,38 @@
 package com.carRental.views.access;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LogoutView extends VerticalLayout {
 
-    public LogoutView() {
-        Button button = new Button("Log out", new Icon(VaadinIcon.EXIT));
-        button.setIconAfterText(true);
+    Dialog logOutDialog = new Dialog();
 
-        add(button);
-        setHorizontalComponentAlignment(Alignment.CENTER, button);
-        button.addClickListener(e -> logOut());
+    public LogoutView() {
+        Button logOutButton = new Button("Log out");
+        logOutButton.addClickListener(e -> logOut());
+
+        Button cancelButton = new Button("Cancel");
+        cancelButton.addClickListener(e -> cancel());
+
+        HorizontalLayout dialogLayout = new HorizontalLayout();
+        dialogLayout.add(logOutButton, cancelButton);
+        logOutDialog.add(dialogLayout);
     }
 
-    private void logOut() {
+    public void logOut() {
+        logOutDialog.close();
         getUI().get().navigate("loginView");
+    }
+
+    public void cancel() {
+        logOutDialog.close();
+    }
+
+    public void displayLogOutDialog() {
+        logOutDialog.open();
     }
 }

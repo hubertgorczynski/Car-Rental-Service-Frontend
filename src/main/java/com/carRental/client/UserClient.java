@@ -58,4 +58,9 @@ public class UserClient {
             return new UserDto();
         }
     }
+
+    public void updateUser(UserDto userDto){
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint()).build().encode().toUri();
+        restTemplate.put(url, userDto);
+    }
 }
