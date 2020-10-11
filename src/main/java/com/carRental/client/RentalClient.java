@@ -50,4 +50,10 @@ public class RentalClient {
         URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getRentalEndpoint()).build().encode().toUri();
         restTemplate.postForObject(url, rentalDto, RentalComplexDto.class);
     }
+
+    public void closeRental(Long id) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getRentalEndpoint() + "/" + id)
+                .build().encode().toUri();
+        restTemplate.delete(url);
+    }
 }

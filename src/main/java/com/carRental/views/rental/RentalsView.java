@@ -3,6 +3,7 @@ package com.carRental.views.rental;
 import com.carRental.client.RentalClient;
 import com.carRental.domain.RentalComplexDto;
 import com.carRental.domain.UserDto;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.spring.annotation.UIScope;
@@ -18,6 +19,7 @@ public class RentalsView extends VerticalLayout {
     private final Grid<RentalComplexDto> rentalGrid = new Grid<>(RentalComplexDto.class);
     private final RentalClient rentalClient;
     private UserDto loggedUserDto;
+    private Long rentalId;
 
     @Autowired
     public RentalsView(RentalClient rentalClient) {
@@ -35,6 +37,8 @@ public class RentalsView extends VerticalLayout {
                 "userEmail",
                 "userPhoneNumber");
 
+        rentalGrid.addComponentColumn(this::createCloseRentalButton);
+
         add(rentalGrid);
     }
 
@@ -48,5 +52,17 @@ public class RentalsView extends VerticalLayout {
         loggedUserDto = userDto;
         List<RentalComplexDto> rentals = rentalClient.getRentalsByUserId(userDto.getId());
         rentalGrid.setItems(rentals);
+    }
+
+    private Button createCloseRentalButton(RentalComplexDto rentalComplexDto) {
+        return new Button("Close rental", event -> {
+            rentalId = rentalComplexDto.getId();
+            closeRental(rentalId);
+        });
+    }
+
+    private void closeRental(Long rentalId) {
+        rentalClient.closeRental(rentalId);
+        refreshRentalsForUser(loggedUserDto);
     }
 }
