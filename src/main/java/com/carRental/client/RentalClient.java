@@ -3,6 +3,7 @@ package com.carRental.client;
 import com.carRental.config.BackEndConfiguration;
 import com.carRental.domain.RentalComplexDto;
 import com.carRental.domain.RentalDto;
+import com.carRental.domain.RentalExtensionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -49,6 +50,17 @@ public class RentalClient {
     public void createRental(RentalDto rentalDto) {
         URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getRentalEndpoint()).build().encode().toUri();
         restTemplate.postForObject(url, rentalDto, RentalComplexDto.class);
+    }
+
+    public void extendRental(RentalExtensionDto rentalExtensionDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getRentalEndpoint() + "/extend_rental")
+                .build().encode().toUri();
+        restTemplate.put(url, rentalExtensionDto);
+    }
+
+    public void modifyRental(RentalDto rentalDto) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getRentalEndpoint()).build().encode().toUri();
+        restTemplate.put(url, rentalDto);
     }
 
     public void closeRental(Long id) {
