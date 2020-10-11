@@ -15,6 +15,7 @@ public class RentalComplexDto {
     private LocalDate rentedFrom;
     private LocalDate rentedTo;
     private BigDecimal rentalCost;
+    private Long carId;
     private String carBrand;
     private String carModel;
     private String userName;
