@@ -59,8 +59,14 @@ public class UserClient {
         }
     }
 
-    public void updateUser(UserDto userDto){
+    public void updateUser(UserDto userDto) {
         URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint()).build().encode().toUri();
         restTemplate.put(url, userDto);
+    }
+
+    public void deleteUser(Long id) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint() + "/" + id)
+                .build().encode().toUri();
+        restTemplate.delete(url);
     }
 }

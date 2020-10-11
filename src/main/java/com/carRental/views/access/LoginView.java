@@ -36,24 +36,22 @@ public class LoginView extends VerticalLayout {
         this.loginClient = loginClient;
         this.userClient = userClient;
 
-        add(email, password, logIn, register);
-        setHorizontalComponentAlignment(Alignment.CENTER, email, password, logIn, register);
-
-        binder.forField(email)
-                .bind(LoginDto::getEmail, LoginDto::setEmail);
-        binder.forField(password)
-                .bind(LoginDto::getPassword, LoginDto::setPassword);
+        bindFields();
 
         logIn.addClickListener(e -> logIn());
-        register.addClickListener(e ->
-                getUI().get().navigate("registrationView"));
+        register.addClickListener(e -> {
+            getUI().get().navigate("registrationView");
+            clearFields();
+        });
+
+        add(email, password, logIn, register);
+        setAlignItems(Alignment.CENTER);
     }
 
     private void logIn() {
         LoginDto loginDto = new LoginDto();
         binder.writeBeanIfValid(loginDto);
-        email.clear();
-        password.clear();
+        clearFields();
 
         if (loginDto.getEmail().equals("admin@gmail.com") && (loginDto.getPassword().equals("admin"))) {
             mainView.adminViewSetup();
@@ -69,6 +67,18 @@ public class LoginView extends VerticalLayout {
                 System.out.println("User does not exist");
             }
         }
+    }
+
+    private void bindFields() {
+        binder.forField(email)
+                .bind(LoginDto::getEmail, LoginDto::setEmail);
+        binder.forField(password)
+                .bind(LoginDto::getPassword, LoginDto::setPassword);
+    }
+
+    private void clearFields() {
+        email.clear();
+        password.clear();
     }
 }
 

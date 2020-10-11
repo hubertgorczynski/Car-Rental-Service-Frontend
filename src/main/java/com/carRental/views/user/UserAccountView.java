@@ -3,6 +3,7 @@ package com.carRental.views.user;
 import com.carRental.client.UserClient;
 import com.carRental.domain.UserDto;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -22,6 +23,7 @@ public class UserAccountView extends VerticalLayout {
     private TextField email = new TextField("Email address");
     private IntegerField phoneNumber = new IntegerField("Phone number");
     private TextField password = new TextField("Password");
+
     private Binder<UserDto> binder = new Binder<>();
     private UserDto loggedUserDto = new UserDto();
     private Long userId;
@@ -39,9 +41,20 @@ public class UserAccountView extends VerticalLayout {
             }
         });
 
+        Button deleteUserButton = new Button("Delete account");
+        deleteUserButton.addClickListener(e -> {
+            deleteUser(loggedUserDto);
+            getUI().get().navigate("loginView");
+        });
+
         VerticalLayout accountLayout = new VerticalLayout();
-        accountLayout.add(name, surname, email, phoneNumber, password, updateUserButton);
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+
+        horizontalLayout.add(updateUserButton, deleteUserButton);
+        accountLayout.add(name, surname, email, phoneNumber, password, horizontalLayout);
+
         add(accountLayout);
+        setHorizontalComponentAlignment(Alignment.CENTER, accountLayout);
     }
 
     public void refreshForUser(UserDto userDto) {
@@ -50,9 +63,13 @@ public class UserAccountView extends VerticalLayout {
         binder.readBean(userDto);
     }
 
-    public void updateUser(UserDto userDto) {
+    private void updateUser(UserDto userDto) {
         userDto.setId(userId);
         userClient.updateUser(userDto);
+    }
+
+    private void deleteUser(UserDto userDto) {
+        userClient.deleteUser(userDto.getId());
     }
 
     private void bindFields() {

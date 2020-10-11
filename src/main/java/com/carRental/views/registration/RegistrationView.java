@@ -55,16 +55,24 @@ public class RegistrationView extends VerticalLayout {
         });
 
         add(formTitle, name, lastName, email, password, phoneNumber, loginButton, registerButton);
-        setHorizontalComponentAlignment(Alignment.CENTER, formTitle, name, lastName, email, password, phoneNumber,
-                loginButton, registerButton);
+        setAlignItems(Alignment.CENTER);
     }
 
     private void save(UserDto userDto) {
         if (!userClient.isUserRegistered(userDto.getEmail())) {
             userClient.registerUser(userDto);
             getUI().get().navigate("loginView");
+            clearFields();
         } else {
             System.out.println("User is already registered");
         }
+    }
+
+    private void clearFields() {
+        name.clear();
+        lastName.clear();
+        email.clear();
+        phoneNumber.clear();
+        password.clear();
     }
 }
