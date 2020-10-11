@@ -3,6 +3,7 @@ package com.carRental.views.user;
 import com.carRental.client.UserClient;
 import com.carRental.domain.UserDto;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -34,23 +35,13 @@ public class UserAccountView extends VerticalLayout {
 
         bindFields();
 
-        Button updateUserButton = new Button("Modify personal data");
-        updateUserButton.addClickListener(e -> {
-            if (binder.writeBeanIfValid(loggedUserDto)) {
-                updateUser(loggedUserDto);
-            }
-        });
-
-        Button deleteUserButton = new Button("Delete account");
-        deleteUserButton.addClickListener(e -> {
-            deleteUser(loggedUserDto);
-            getUI().get().navigate("loginView");
-        });
-
         VerticalLayout accountLayout = new VerticalLayout();
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
+        Button deleteUserButton = createDeleteAccountButton();
+        Button updateUserButton = createUpdateUserButton();
         horizontalLayout.add(updateUserButton, deleteUserButton);
+
         accountLayout.add(name, surname, email, phoneNumber, password, horizontalLayout);
 
         add(accountLayout);
@@ -61,6 +52,51 @@ public class UserAccountView extends VerticalLayout {
         loggedUserDto = userDto;
         userId = userDto.getId();
         binder.readBean(userDto);
+    }
+
+    private Button createDeleteAccountButton() {
+        Dialog confirmDeleteAccountDialog = new Dialog();
+        Button confirmDeleteAccountButton = createConfirmDeleteAccountButton(confirmDeleteAccountDialog);
+        Button cancelDeleteAccountButton = createCancelConfirmationButton(confirmDeleteAccountDialog);
+        confirmDeleteAccountDialog.add(confirmDeleteAccountButton, cancelDeleteAccountButton);
+
+        return new Button("Delete account", event -> {
+            confirmDeleteAccountDialog.open();
+        });
+    }
+
+    private Button createConfirmDeleteAccountButton(Dialog dialog) {
+        return new Button("Confirm", event -> {
+            deleteUser(loggedUserDto);
+            dialog.close();
+            getUI().get().navigate("loginView");
+        });
+    }
+
+    private Button createUpdateUserButton() {
+        Dialog confirmUpdateUserDialog = new Dialog();
+        Button confirmUpdateUserButton = createConfirmUpdateUserButton(confirmUpdateUserDialog);
+        Button cancelUpdateUserButton = createCancelConfirmationButton(confirmUpdateUserDialog);
+        confirmUpdateUserDialog.add(confirmUpdateUserButton, cancelUpdateUserButton);
+
+        return new Button("Modify personal data", event -> {
+            confirmUpdateUserDialog.open();
+        });
+    }
+
+    private Button createConfirmUpdateUserButton(Dialog dialog) {
+        return new Button("Confirm", event -> {
+            if (binder.writeBeanIfValid(loggedUserDto)) {
+                updateUser(loggedUserDto);
+            }
+            dialog.close();
+        });
+    }
+
+    private Button createCancelConfirmationButton(Dialog dialog) {
+        return new Button("Cancel", event -> {
+            dialog.close();
+        });
     }
 
     private void updateUser(UserDto userDto) {
