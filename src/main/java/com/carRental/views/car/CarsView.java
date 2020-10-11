@@ -3,10 +3,12 @@ package com.carRental.views.car;
 import com.carRental.client.CarClient;
 import com.carRental.client.RentalClient;
 import com.carRental.domain.CarDto;
+import com.carRental.domain.RentalDto;
 import com.carRental.domain.Status;
 import com.carRental.domain.UserDto;
 import com.carRental.views.rental.RentalsView;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -16,11 +18,13 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
+import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@UIScope
 @Component
 public class CarsView extends VerticalLayout {
 
@@ -59,6 +63,11 @@ public class CarsView extends VerticalLayout {
     private IntegerField mileageUpdate = new IntegerField("Mileage");
     private BigDecimalField costPerDayUpdate = new BigDecimalField("Cost / day");
 
+    private Dialog newRentalDialog = new Dialog();
+    private Binder<RentalDto> binderForRental = new Binder<>();
+    private DatePicker startRentDate = new DatePicker("Rented from");
+    private DatePicker endRentDate = new DatePicker("Rented to");
+
     @Autowired
     public CarsView(CarClient carClient, RentalClient rentalClient, RentalsView rentalsView) {
         this.carClient = carClient;
@@ -96,6 +105,23 @@ public class CarsView extends VerticalLayout {
         updateCarDialog.isCloseOnOutsideClick();
         updateCarDialog.add(updateCarDialogLayout);
 
+        Button confirmRentButton = new Button("Confirm rental");
+        confirmRentButton.addClickListener(e -> {
+            RentalDto rentalDto = new RentalDto();
+            binderForRental.writeBeanIfValid(rentalDto);
+            rentalDto.setCarId(carId);
+            rentalDto.setUserId(loggedUserDto.getId());
+            rentalClient.createRental(rentalDto);
+            rentalsView.refreshRentalsForUser(loggedUserDto);
+            refreshCarsForUser(loggedUserDto);
+            newRentalDialog.close();
+        });
+
+        VerticalLayout newRentalDialogLayout = new VerticalLayout();
+        newRentalDialogLayout.add(startRentDate, endRentDate, confirmRentButton);
+        newRentalDialog.isCloseOnOutsideClick();
+        newRentalDialog.add(newRentalDialogLayout);
+
         carGrid.setColumns(
                 "id",
                 "vin",
@@ -111,6 +137,7 @@ public class CarsView extends VerticalLayout {
 
         carGrid.addComponentColumn(this::createUpdateButton);
         carGrid.addComponentColumn(this::createDeleteButton);
+        carGrid.addComponentColumn(this::createRentalButton);
 
         add(addCarButton, carGrid, addCarDialog);
     }
@@ -162,6 +189,21 @@ public class CarsView extends VerticalLayout {
             updateButton.setEnabled(false);
         }
         return updateButton;
+    }
+
+    private Button createRentalButton(CarDto carDto) {
+        Button rentalButton = new Button("Rent a car");
+        rentalButton.addClickListener(e -> {
+            carId = carDto.getId();
+            newRentalDialog.open();
+        });
+        if (loggedUserDto != null) {
+            rentalButton.setEnabled(true);
+        }
+        if (carDto.getStatus().equals(Status.RENTED)) {
+            rentalButton.setEnabled(false);
+        }
+        return rentalButton;
     }
 
     private Button createDeleteButton(CarDto carDto) {
@@ -217,6 +259,11 @@ public class CarsView extends VerticalLayout {
                 .bind(CarDto::getMileage, CarDto::setMileage);
         binderForUpdatingCar.forField(costPerDayUpdate)
                 .bind(CarDto::getCostPerDay, CarDto::setCostPerDay);
+
+        binderForRental.forField(startRentDate)
+                .bind(RentalDto::getRentedFrom, RentalDto::setRentedFrom);
+        binderForRental.forField(endRentDate)
+                .bind(RentalDto::getRentedTo, RentalDto::setRentedTo);
     }
 }
 
