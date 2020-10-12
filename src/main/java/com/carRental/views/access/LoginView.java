@@ -23,10 +23,9 @@ public class LoginView extends VerticalLayout {
     private final MainView mainView;
     private final LoginClient loginClient;
     private final UserClient userClient;
+
     private EmailField email = new EmailField("E-mail address");
     private PasswordField password = new PasswordField("Password");
-    private Button logIn = new Button("Log in");
-    private Button register = new Button("You don't have account? Create it here.");
     private Binder<LoginDto> binder = new Binder<>();
     private UserDto userDto;
 
@@ -38,13 +37,9 @@ public class LoginView extends VerticalLayout {
 
         bindFields();
 
-        logIn.addClickListener(e -> logIn());
-        register.addClickListener(e -> {
-            getUI().get().navigate("registrationView");
-            clearFields();
-        });
-
-        add(email, password, logIn, register);
+        Button loginButton = createLoginButton();
+        Button registerButton = createRegisterButton();
+        add(email, password, loginButton, registerButton);
         setAlignItems(Alignment.CENTER);
     }
 
@@ -56,17 +51,28 @@ public class LoginView extends VerticalLayout {
         if (loginDto.getEmail().equals("admin@gmail.com") && (loginDto.getPassword().equals("admin"))) {
             mainView.adminViewSetup();
             mainView.setBackStartingTab();
-            getUI().get().navigate("mainView");
+            getUI().ifPresent(ui -> ui.navigate("mainView"));
         } else {
             if (loginClient.isLoginRegistered(loginDto)) {
                 userDto = userClient.getUserByEmail(loginDto.getEmail());
                 mainView.userViewSetup(userDto);
                 mainView.setBackStartingTab();
-                getUI().get().navigate("mainView");
+                getUI().ifPresent(ui -> ui.navigate("mainView"));
             } else {
                 System.out.println("User does not exist");
             }
         }
+    }
+
+    private Button createLoginButton() {
+        return new Button("Log in", event -> logIn());
+    }
+
+    private Button createRegisterButton() {
+        return new Button("Create account", event -> {
+            getUI().ifPresent(ui -> ui.navigate("registrationView"));
+            clearFields();
+        });
     }
 
     private void bindFields() {

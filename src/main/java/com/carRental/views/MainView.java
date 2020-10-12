@@ -50,34 +50,35 @@ public class MainView extends VerticalLayout {
         tabs.add(userAccountView, userAccountTab);
         tabs.add(logoutView, logoutTab);
 
-        Button logoutButton = new Button("Log out");
+        Button logoutButton = createLogoutButton();
         logoutTab.add(logoutButton);
-        logoutButton.addClickListener(e -> {
-            logoutView.displayLogOutDialog();
-        });
 
         add(tabs);
     }
 
     public void adminViewSetup() {
         loggedUserDto = null;
-        userAccountTab.setEnabled(false);
-        usersTab.setEnabled(true);
+        userAccountTab.setVisible(false);
+        usersTab.setVisible(true);
         carsView.refreshCarsForAdmin();
-        usersView.refreshUsers();
         rentalsView.refreshRentalsForAdmin();
+        usersView.refreshUsers();
     }
 
     public void userViewSetup(UserDto userDto) {
         loggedUserDto = userDto;
+        userAccountTab.setVisible(true);
+        usersTab.setVisible(false);
         carsView.refreshCarsForUser(userDto);
         rentalsView.refreshRentalsForUser(userDto);
-        usersTab.setEnabled(false);
-        userAccountTab.setEnabled(true);
         userAccountView.refreshForUser(userDto);
     }
 
     public void setBackStartingTab() {
         tabs.select(carsTab);
+    }
+
+    private Button createLogoutButton() {
+        return new Button("Log out", event -> logoutView.displayLogOutDialog());
     }
 }

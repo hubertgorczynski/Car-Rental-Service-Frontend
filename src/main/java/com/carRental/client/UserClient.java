@@ -18,11 +18,14 @@ import static java.util.Optional.ofNullable;
 @Component
 public class UserClient {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final BackEndConfiguration backEndConfiguration;
 
     @Autowired
-    private BackEndConfiguration backEndConfiguration;
+    public UserClient(RestTemplate restTemplate, BackEndConfiguration backEndConfiguration) {
+        this.restTemplate = restTemplate;
+        this.backEndConfiguration = backEndConfiguration;
+    }
 
     public List<UserDto> getUsers() {
         try {

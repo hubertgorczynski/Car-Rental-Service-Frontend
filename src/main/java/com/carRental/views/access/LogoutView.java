@@ -14,20 +14,18 @@ public class LogoutView extends VerticalLayout {
     Dialog logOutDialog = new Dialog();
 
     public LogoutView() {
-        Button logOutButton = new Button("Log out");
-        logOutButton.addClickListener(e -> logOut());
-
-        Button cancelButton = new Button("Cancel");
-        cancelButton.addClickListener(e -> cancel());
+        Button logOutButton = createLogoutButton();
+        Button cancelButton = createCancelButton();
 
         HorizontalLayout dialogLayout = new HorizontalLayout();
         dialogLayout.add(logOutButton, cancelButton);
+
         logOutDialog.add(dialogLayout);
     }
 
     public void logOut() {
         logOutDialog.close();
-        getUI().get().navigate("loginView");
+        getUI().ifPresent(ui -> ui.navigate("loginView"));
     }
 
     public void cancel() {
@@ -36,5 +34,13 @@ public class LogoutView extends VerticalLayout {
 
     public void displayLogOutDialog() {
         logOutDialog.open();
+    }
+
+    private Button createLogoutButton() {
+        return new Button("Log out", event -> logOut());
+    }
+
+    private Button createCancelButton() {
+        return new Button("Cancel", event -> cancel());
     }
 }

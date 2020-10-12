@@ -28,7 +28,7 @@ import java.util.List;
 @Component
 public class CarsView extends VerticalLayout {
 
-    private final Grid<CarDto> carGrid = new Grid<>(CarDto.class);
+    private final Grid<CarDto> carGrid = new Grid<>();
     private final CarClient carClient;
     private final RentalClient rentalClient;
     private final RentalsView rentalsView;
@@ -76,68 +76,33 @@ public class CarsView extends VerticalLayout {
 
         bindFields();
 
-        addCarButton.addClickListener(e -> addCarDialog.open());
-
-        Button saveCarButton = new Button("Save car");
-        saveCarButton.addClickListener(e -> {
-            binderForSavingCar.writeBeanIfValid(carDto);
-            saveCar(carDto);
-        });
-
         VerticalLayout newCarDialogLayout = new VerticalLayout();
-        newCarDialogLayout.add(vin, brand, model, productionYear, fuelType, engineCapacity, bodyClass, mileage, costPerDay,
-                saveCarButton);
+        Button saveCarButton = createSaveCarButton();
+        newCarDialogLayout.add(vin, brand, model, productionYear, fuelType, engineCapacity, bodyClass, mileage,
+                costPerDay, saveCarButton);
         addCarDialog.isCloseOnOutsideClick();
         addCarDialog.add(newCarDialogLayout);
 
-        Button confirmUpdateButton = new Button("Confirm");
-        confirmUpdateButton.addClickListener(e -> {
-            binderForUpdatingCar.writeBeanIfValid(carDto);
-            carDto.setId(carId);
-            carClient.updateCar(carDto);
-            refreshCarsForAdmin();
-            updateCarDialog.close();
-        });
-
         VerticalLayout updateCarDialogLayout = new VerticalLayout();
-        updateCarDialogLayout.add(vinUpdate, brandUpdate, modelUpdate, productionYearUpdate, fuelTypeUpdate, engineCapacityUpdate,
-                bodyClassUpdate, mileageUpdate, costPerDayUpdate, confirmUpdateButton);
+        Button confirmUpdateButton = createConfirmUpdateButton();
+        updateCarDialogLayout.add(vinUpdate, brandUpdate, modelUpdate, productionYearUpdate, fuelTypeUpdate,
+                engineCapacityUpdate, bodyClassUpdate, mileageUpdate, costPerDayUpdate, confirmUpdateButton);
         updateCarDialog.isCloseOnOutsideClick();
         updateCarDialog.add(updateCarDialogLayout);
 
-        Button confirmRentButton = new Button("Confirm rental");
-        confirmRentButton.addClickListener(e -> {
-            RentalDto rentalDto = new RentalDto();
-            binderForRental.writeBeanIfValid(rentalDto);
-            rentalDto.setCarId(carId);
-            rentalDto.setUserId(loggedUserDto.getId());
-            rentalClient.createRental(rentalDto);
-            rentalsView.refreshRentalsForUser(loggedUserDto);
-            refreshCarsForUser(loggedUserDto);
-            newRentalDialog.close();
-        });
-
         VerticalLayout newRentalDialogLayout = new VerticalLayout();
+        Button confirmRentButton = createConfirmRentalButton();
         newRentalDialogLayout.add(startRentDate, endRentDate, confirmRentButton);
         newRentalDialog.isCloseOnOutsideClick();
         newRentalDialog.add(newRentalDialogLayout);
 
-        carGrid.setColumns(
-                "id",
-                "vin",
-                "brand",
-                "model",
-                "productionYear",
-                "fuelType",
-                "engineCapacity",
-                "bodyClass",
-                "mileage",
-                "costPerDay",
-                "status");
+        setColumns();
 
         carGrid.addComponentColumn(this::createUpdateButton);
         carGrid.addComponentColumn(this::createDeleteButton);
         carGrid.addComponentColumn(this::createRentalButton);
+
+        addCarButton.addClickListener(e -> addCarDialog.open());
 
         add(addCarButton, carGrid, addCarDialog);
     }
@@ -175,24 +140,38 @@ public class CarsView extends VerticalLayout {
         costPerDay.clear();
     }
 
+    private Button createSaveCarButton() {
+        return new Button("Save car", event -> {
+            binderForSavingCar.writeBeanIfValid(carDto);
+            saveCar(carDto);
+        });
+    }
+
     private Button createUpdateButton(CarDto carDto) {
-        Button updateButton = new Button("Update car");
+        Button updateButton = new Button("Update");
         updateButton.addClickListener(e -> {
             carId = carDto.getId();
             binderForUpdatingCar.readBean(carDto);
             updateCarDialog.open();
         });
-        if (carDto.getStatus().equals(Status.RENTED)) {
-            updateButton.setEnabled(false);
-        }
         if (loggedUserDto != null) {
             updateButton.setEnabled(false);
         }
         return updateButton;
     }
 
+    private Button createConfirmUpdateButton() {
+        return new Button("Confirm", event -> {
+            binderForUpdatingCar.writeBeanIfValid(carDto);
+            carDto.setId(carId);
+            carClient.updateCar(carDto);
+            refreshCarsForAdmin();
+            updateCarDialog.close();
+        });
+    }
+
     private Button createRentalButton(CarDto carDto) {
-        Button rentalButton = new Button("Rent a car");
+        Button rentalButton = new Button("Rent");
         rentalButton.addClickListener(e -> {
             carId = carDto.getId();
             newRentalDialog.open();
@@ -206,19 +185,40 @@ public class CarsView extends VerticalLayout {
         return rentalButton;
     }
 
+    private Button createConfirmRentalButton() {
+        return new Button("Confirm rental", event -> {
+            RentalDto rentalDto = new RentalDto();
+            binderForRental.writeBeanIfValid(rentalDto);
+            rentalDto.setCarId(carId);
+            rentalDto.setUserId(loggedUserDto.getId());
+            rentalClient.createRental(rentalDto);
+            rentalsView.refreshRentalsForUser(loggedUserDto);
+            refreshCarsForUser(loggedUserDto);
+            newRentalDialog.close();
+        });
+    }
+
     private Button createDeleteButton(CarDto carDto) {
-        Button deleteButton = new Button("Delete car");
+        Button deleteButton = new Button("Delete");
         deleteButton.addClickListener(e -> {
             carClient.deleteCar(carDto.getId());
             refreshCarsForAdmin();
         });
-        if (carDto.getStatus().equals(Status.RENTED)) {
-            deleteButton.setEnabled(false);
-        }
         if (loggedUserDto != null) {
             deleteButton.setEnabled(false);
         }
         return deleteButton;
+    }
+
+    private void setColumns() {
+        carGrid.addColumn(CarDto::getId).setHeader("Id");
+        carGrid.addColumn(CarDto::getVin).setHeader("VIN");
+        carGrid.addColumn(CarDto::getBrand).setHeader("Brand");
+        carGrid.addColumn(CarDto::getModel).setHeader("Model");
+        carGrid.addColumn(CarDto::getProductionYear).setHeader("Year");
+        carGrid.addColumn(CarDto::getMileage).setHeader("Mileage");
+        carGrid.addColumn(CarDto::getCostPerDay).setHeader("Cost/day");
+        carGrid.addColumn(CarDto::getStatus).setHeader("Status");
     }
 
     private void bindFields() {

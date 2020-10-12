@@ -19,47 +19,33 @@ import java.util.List;
 @Component
 public class UsersView extends VerticalLayout {
 
-    private final Grid<UserDto> userGrid = new Grid<>(UserDto.class);
+    private final Grid<UserDto> userGrid = new Grid<>();
     private final UserClient userClient;
-
     private Dialog dialog = new Dialog();
+    private Binder<UserDto> binder = new Binder<>();
     private TextField name = new TextField("Name");
     private TextField lastName = new TextField("Last name");
     private TextField email = new TextField("Email address");
     private TextField password = new TextField("Password");
     private IntegerField phoneNumber = new IntegerField("Phone number");
-    private Binder<UserDto> binder = new Binder<>();
     private UserDto userDto = new UserDto();
 
     @Autowired
     public UsersView(UserClient userClient) {
         this.userClient = userClient;
 
-        VerticalLayout dialogLayout = new VerticalLayout();
-        Button addUserButton = new Button("Add new user");
-        Button saveUserButton = new Button("Save user");
-
         bindFields();
 
-        addUserButton.addClickListener(e -> dialog.open());
-        saveUserButton.addClickListener(e -> {
-            binder.writeBeanIfValid(userDto);
-            saveUser(userDto);
-        });
-
+        VerticalLayout dialogLayout = new VerticalLayout();
+        Button saveUserButton = createSaveUserButton();
         dialogLayout.add(name, lastName, email, password, phoneNumber, saveUserButton);
+
         dialog.isCloseOnOutsideClick();
         dialog.add(dialogLayout);
 
-        userGrid.setColumns(
-                "id",
-                "name",
-                "lastName",
-                "email",
-                "password",
-                "phoneNumber",
-                "accountCreated");
+        setColumns();
 
+        Button addUserButton = createAddUserButton();
         add(addUserButton, userGrid, dialog);
     }
 
@@ -77,6 +63,27 @@ public class UsersView extends VerticalLayout {
         } else {
             System.out.println("User is already registered");
         }
+    }
+
+    private Button createAddUserButton() {
+        return new Button("Add new user", event -> dialog.open());
+    }
+
+    private Button createSaveUserButton() {
+        return new Button("Save user", event -> {
+            binder.writeBeanIfValid(userDto);
+            saveUser(userDto);
+        });
+    }
+
+    private void setColumns() {
+        userGrid.addColumn(UserDto::getId).setHeader("Id");
+        userGrid.addColumn(UserDto::getName).setHeader("Name");
+        userGrid.addColumn(UserDto::getLastName).setHeader("Surname");
+        userGrid.addColumn(UserDto::getEmail).setHeader("Email");
+        userGrid.addColumn(UserDto::getPassword).setHeader("Password");
+        userGrid.addColumn(UserDto::getPhoneNumber).setHeader("Phone");
+        userGrid.addColumn(UserDto::getAccountCreated).setHeader("Created");
     }
 
     private void clearFields() {

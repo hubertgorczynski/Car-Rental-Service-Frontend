@@ -22,7 +22,7 @@ import java.util.List;
 @Component
 public class RentalsView extends VerticalLayout {
 
-    private final Grid<RentalComplexDto> rentalGrid = new Grid<>(RentalComplexDto.class);
+    private final Grid<RentalComplexDto> rentalGrid = new Grid<>();
     private final RentalClient rentalClient;
 
     private Dialog extendRentalDialog = new Dialog();
@@ -44,50 +44,19 @@ public class RentalsView extends VerticalLayout {
 
         bindFields();
 
-        Button confirmExtendRentalButton = new Button("Confirm");
-        confirmExtendRentalButton.addClickListener(event -> {
-            RentalExtensionDto rentalExtensionDto = new RentalExtensionDto();
-            binderForExtendRental.writeBeanIfValid(rentalExtensionDto);
-            rentalExtensionDto.setRentalId(rentalId);
-            rentalClient.extendRental(rentalExtensionDto);
-            refreshRentalsForUser(loggedUserDto);
-            extendRentalDialog.close();
-        });
-
         VerticalLayout extendRentalDialogLayout = new VerticalLayout();
+        Button confirmExtendRentalButton = createConfirmExtendRentalButton();
         extendRentalDialogLayout.add(extension, confirmExtendRentalButton);
         extendRentalDialog.isCloseOnOutsideClick();
         extendRentalDialog.add(extendRentalDialogLayout);
 
-        Button confirmModifyRentalButton = new Button("Confirm");
-        confirmModifyRentalButton.addClickListener(event -> {
-            RentalDto rentalDto = new RentalDto();
-            binderForModifyRental.writeBeanIfValid(rentalDto);
-            rentalDto.setId(rentalId);
-            rentalDto.setCarId(carId);
-            rentalDto.setUserId(loggedUserDto.getId());
-            rentalClient.modifyRental(rentalDto);
-            refreshRentalsForUser(loggedUserDto);
-            modifyRentalDialog.close();
-        });
-
         VerticalLayout modifyRentalDialogLayout = new VerticalLayout();
+        Button confirmModifyRentalButton = createConfirmModifyRentalButton();
         modifyRentalDialogLayout.add(modifyStartDate, modifyEndDate, confirmModifyRentalButton);
         modifyRentalDialog.isCloseOnOutsideClick();
         modifyRentalDialog.add(modifyRentalDialogLayout);
 
-        rentalGrid.setColumns(
-                "id",
-                "rentedFrom",
-                "rentedTo",
-                "rentalCost",
-                "carId",
-                "carBrand",
-                "carModel",
-                "userName",
-                "userLastName",
-                "userEmail",
-                "userPhoneNumber");
+        setColumns();
 
         rentalGrid.addComponentColumn(this::createExtendRentalButton);
         rentalGrid.addComponentColumn(this::createModifyRentalButton);
@@ -109,14 +78,14 @@ public class RentalsView extends VerticalLayout {
     }
 
     private Button createCloseRentalButton(RentalComplexDto rentalComplexDto) {
-        return new Button("Close rental", event -> {
+        return new Button("Close", event -> {
             rentalId = rentalComplexDto.getId();
             closeRental(rentalId);
         });
     }
 
     private Button createExtendRentalButton(RentalComplexDto rentalComplexDto) {
-        Button extendRentalButton = new Button("Extend rental");
+        Button extendRentalButton = new Button("Extend");
         extendRentalButton.addClickListener(event -> {
             rentalId = rentalComplexDto.getId();
             extendRentalDialog.open();
@@ -128,7 +97,7 @@ public class RentalsView extends VerticalLayout {
     }
 
     private Button createModifyRentalButton(RentalComplexDto rentalComplexDto) {
-        Button modifyRentalButton = new Button("Modify rental");
+        Button modifyRentalButton = new Button("Modify");
         modifyRentalButton.addClickListener(event -> {
             rentalId = rentalComplexDto.getId();
             carId = rentalComplexDto.getCarId();
@@ -140,9 +109,45 @@ public class RentalsView extends VerticalLayout {
         return modifyRentalButton;
     }
 
+    private Button createConfirmExtendRentalButton() {
+        return new Button("Confirm", event -> {
+            RentalExtensionDto rentalExtensionDto = new RentalExtensionDto();
+            binderForExtendRental.writeBeanIfValid(rentalExtensionDto);
+            rentalExtensionDto.setRentalId(rentalId);
+            rentalClient.extendRental(rentalExtensionDto);
+            refreshRentalsForUser(loggedUserDto);
+            extendRentalDialog.close();
+        });
+    }
+
+    private Button createConfirmModifyRentalButton() {
+        return new Button("Confirm", event -> {
+            RentalDto rentalDto = new RentalDto();
+            binderForModifyRental.writeBeanIfValid(rentalDto);
+            rentalDto.setId(rentalId);
+            rentalDto.setCarId(carId);
+            rentalDto.setUserId(loggedUserDto.getId());
+            rentalClient.modifyRental(rentalDto);
+            refreshRentalsForUser(loggedUserDto);
+            modifyRentalDialog.close();
+        });
+    }
+
     private void closeRental(Long rentalId) {
         rentalClient.closeRental(rentalId);
         refreshRentalsForUser(loggedUserDto);
+    }
+
+    private void setColumns() {
+        rentalGrid.addColumn(RentalComplexDto::getId).setHeader("Id");
+        rentalGrid.addColumn(RentalComplexDto::getRentedFrom).setHeader("Start");
+        rentalGrid.addColumn(RentalComplexDto::getRentedTo).setHeader("End");
+        rentalGrid.addColumn(RentalComplexDto::getRentalCost).setHeader("Cost");
+        rentalGrid.addColumn(RentalComplexDto::getCarBrand).setHeader("Brand");
+        rentalGrid.addColumn(RentalComplexDto::getCarModel).setHeader("Model");
+        rentalGrid.addColumn(RentalComplexDto::getUserName).setHeader("Name");
+        rentalGrid.addColumn(RentalComplexDto::getUserLastName).setHeader("Surname");
+        rentalGrid.addColumn(RentalComplexDto::getUserEmail).setHeader("Email");
     }
 
     private void bindFields() {

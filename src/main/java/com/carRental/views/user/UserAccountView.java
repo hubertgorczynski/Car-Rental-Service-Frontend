@@ -18,14 +18,12 @@ import org.springframework.stereotype.Component;
 public class UserAccountView extends VerticalLayout {
 
     private final UserClient userClient;
-
+    private Binder<UserDto> binder = new Binder<>();
     private TextField name = new TextField("Name");
     private TextField surname = new TextField("Last name");
     private TextField email = new TextField("Email address");
     private IntegerField phoneNumber = new IntegerField("Phone number");
     private TextField password = new TextField("Password");
-
-    private Binder<UserDto> binder = new Binder<>();
     private UserDto loggedUserDto = new UserDto();
     private Long userId;
 
@@ -60,16 +58,14 @@ public class UserAccountView extends VerticalLayout {
         Button cancelDeleteAccountButton = createCancelConfirmationButton(confirmDeleteAccountDialog);
         confirmDeleteAccountDialog.add(confirmDeleteAccountButton, cancelDeleteAccountButton);
 
-        return new Button("Delete account", event -> {
-            confirmDeleteAccountDialog.open();
-        });
+        return new Button("Delete account", event -> confirmDeleteAccountDialog.open());
     }
 
     private Button createConfirmDeleteAccountButton(Dialog dialog) {
         return new Button("Confirm", event -> {
             deleteUser(loggedUserDto);
             dialog.close();
-            getUI().get().navigate("loginView");
+            getUI().ifPresent(ui -> ui.navigate("loginView"));
         });
     }
 
@@ -79,9 +75,7 @@ public class UserAccountView extends VerticalLayout {
         Button cancelUpdateUserButton = createCancelConfirmationButton(confirmUpdateUserDialog);
         confirmUpdateUserDialog.add(confirmUpdateUserButton, cancelUpdateUserButton);
 
-        return new Button("Modify personal data", event -> {
-            confirmUpdateUserDialog.open();
-        });
+        return new Button("Modify personal data", event -> confirmUpdateUserDialog.open());
     }
 
     private Button createConfirmUpdateUserButton(Dialog dialog) {
@@ -94,9 +88,7 @@ public class UserAccountView extends VerticalLayout {
     }
 
     private Button createCancelConfirmationButton(Dialog dialog) {
-        return new Button("Cancel", event -> {
-            dialog.close();
-        });
+        return new Button("Cancel", event -> dialog.close());
     }
 
     private void updateUser(UserDto userDto) {

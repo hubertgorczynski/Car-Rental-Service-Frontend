@@ -20,11 +20,14 @@ import static java.util.Optional.ofNullable;
 @Component
 public class RentalClient {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final BackEndConfiguration backEndConfiguration;
 
     @Autowired
-    private BackEndConfiguration backEndConfiguration;
+    public RentalClient(RestTemplate restTemplate, BackEndConfiguration backEndConfiguration) {
+        this.restTemplate = restTemplate;
+        this.backEndConfiguration = backEndConfiguration;
+    }
 
     public List<RentalComplexDto> getRentals() {
         try {

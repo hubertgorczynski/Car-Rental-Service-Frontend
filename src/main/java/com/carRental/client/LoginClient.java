@@ -12,11 +12,14 @@ import java.net.URI;
 @Component
 public class LoginClient {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final BackEndConfiguration backEndConfiguration;
 
     @Autowired
-    private BackEndConfiguration backEndConfiguration;
+    public LoginClient(RestTemplate restTemplate, BackEndConfiguration backEndConfiguration) {
+        this.restTemplate = restTemplate;
+        this.backEndConfiguration = backEndConfiguration;
+    }
 
     public Boolean isLoginRegistered(LoginDto loginDto) {
         URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getLoginEndpoint() + "/is_already_registered")
