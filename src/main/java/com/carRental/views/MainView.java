@@ -68,6 +68,7 @@ public class MainView extends VerticalLayout {
         carsView.refreshCarsForAdmin();
         rentalsView.refreshRentalsForAdmin();
         usersView.refreshUsers();
+        hereApiView.clearGrid();
     }
 
     public void userViewSetup(UserDto userDto) {
@@ -77,6 +78,7 @@ public class MainView extends VerticalLayout {
         carsView.refreshCarsForUser(userDto);
         rentalsView.refreshRentalsForUser(userDto);
         userAccountView.refreshForUser(userDto);
+        hereApiView.clearGrid();
     }
 
     public void setBackStartingTab() {
