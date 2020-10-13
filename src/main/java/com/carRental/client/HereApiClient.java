@@ -2,8 +2,9 @@ package com.carRental.client;
 
 import com.carRental.config.BackEndConfiguration;
 import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyDto;
-import com.carRental.domain.hereApi.Geocode.CoordinatesDto;
+import com.carRental.domain.hereApi.CarAgenciesSearcher.CoordinatesDto;
 import com.carRental.domain.hereApi.Geocode.GeocodeDto;
+import com.carRental.domain.hereApi.Geocode.ZipCodeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -26,10 +27,10 @@ public class HereApiClient {
         this.backEndConfiguration = backEndConfiguration;
     }
 
-    public GeocodeDto getCoordinates(String postalCode) {
+    public GeocodeDto getCoordinates(ZipCodeDto zipCodeDto) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getHereApiEndpoint() +
-                    "/check_coordinates_by_postal_code/" + postalCode)
+                    "/check_coordinates_by_postal_code/" + zipCodeDto.getZipCode())
                     .build().encode().toUri();
             GeocodeDto response = restTemplate.getForObject(url, GeocodeDto.class);
             return ofNullable(response).orElse(new GeocodeDto());

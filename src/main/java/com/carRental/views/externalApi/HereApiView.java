@@ -4,7 +4,9 @@ import com.carRental.client.HereApiClient;
 import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyComplexDto;
 import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyDto;
 import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyResultDto;
-import com.carRental.domain.hereApi.Geocode.CoordinatesDto;
+import com.carRental.domain.hereApi.CarAgenciesSearcher.CoordinatesDto;
+import com.carRental.domain.hereApi.Geocode.GeocodeDto;
+import com.carRental.domain.hereApi.Geocode.ZipCodeDto;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -28,9 +30,9 @@ public class HereApiView extends VerticalLayout {
 
     private Dialog dialog = new Dialog();
     private CoordinatesDto coordinatesDto = new CoordinatesDto();
-    private Binder<CoordinatesDto> binder = new Binder<>();
-    private TextField latitude = new TextField("Latitude (e.g. 52.39917)");
-    private TextField longitude = new TextField("Longitude (e.g. 16.94538)");
+    private ZipCodeDto zipCodeDto = new ZipCodeDto();
+    private Binder<ZipCodeDto> codeBinder = new Binder<>();
+    private TextField zipCode = new TextField("Enter Your zip-code below:");
 
     @Autowired
     public HereApiView(HereApiClient hereApiClient) {
@@ -40,7 +42,7 @@ public class HereApiView extends VerticalLayout {
 
         VerticalLayout dialogLayout = new VerticalLayout();
         Button confirmFindAgenciesButton = createConfirmFindAgenciesButton();
-        dialogLayout.add(latitude, longitude, confirmFindAgenciesButton);
+        dialogLayout.add(zipCode, confirmFindAgenciesButton);
 
         dialog.isCloseOnOutsideClick();
         dialog.add(dialogLayout);
@@ -62,22 +64,17 @@ public class HereApiView extends VerticalLayout {
         clearFields();
     }
 
-    private List<CarAgencyComplexDto> mapToCarAgencyComplexDtoList(final List<CarAgencyResultDto> inputList) {
-        return inputList.stream()
-                .map(carAgencyResultDto -> new CarAgencyComplexDto(
-                        carAgencyResultDto.getTitle(),
-                        carAgencyResultDto.getAddress().getStreet(),
-                        carAgencyResultDto.getAddress().getHouseNumber(),
-                        carAgencyResultDto.getAddress().getPostalCode(),
-                        carAgencyResultDto.getAddress().getCity(),
-                        carAgencyResultDto.getAddress().getState(),
-                        carAgencyResultDto.getAddress().getCountryName()))
-                .collect(Collectors.toList());
+    private CoordinatesDto getCoordinatesByZipCode(ZipCodeDto zipCodeDto) {
+        GeocodeDto geocodeDto = hereApiClient.getCoordinates(zipCodeDto);
+        return new CoordinatesDto(
+                geocodeDto.getGeocodeResultDtoList().get(0).getPosition().getLatitude(),
+                geocodeDto.getGeocodeResultDtoList().get(0).getPosition().getLongitude());
     }
 
     private Button createConfirmFindAgenciesButton() {
         return new Button("Search", event -> {
-            binder.writeBeanIfValid(coordinatesDto);
+            codeBinder.writeBeanIfValid(zipCodeDto);
+            coordinatesDto = getCoordinatesByZipCode(zipCodeDto);
             findAgencies(coordinatesDto);
         });
     }
@@ -94,16 +91,26 @@ public class HereApiView extends VerticalLayout {
         grid.addColumn(CarAgencyComplexDto::getCity).setHeader("City");
     }
 
+    private List<CarAgencyComplexDto> mapToCarAgencyComplexDtoList(final List<CarAgencyResultDto> inputList) {
+        return inputList.stream()
+                .map(carAgencyResultDto -> new CarAgencyComplexDto(
+                        carAgencyResultDto.getTitle(),
+                        carAgencyResultDto.getAddress().getStreet(),
+                        carAgencyResultDto.getAddress().getHouseNumber(),
+                        carAgencyResultDto.getAddress().getPostalCode(),
+                        carAgencyResultDto.getAddress().getCity(),
+                        carAgencyResultDto.getAddress().getState(),
+                        carAgencyResultDto.getAddress().getCountryName()))
+                .collect(Collectors.toList());
+    }
+
     private void bindFields() {
-        binder.forField(latitude)
-                .bind(CoordinatesDto::getLatitude, CoordinatesDto::setLatitude);
-        binder.forField(longitude)
-                .bind(CoordinatesDto::getLongitude, CoordinatesDto::setLongitude);
+        codeBinder.forField(zipCode)
+                .bind(ZipCodeDto::getZipCode, ZipCodeDto::setZipCode);
     }
 
     private void clearFields() {
-        latitude.clear();
-        longitude.clear();
+        zipCode.clear();
     }
 
     public void clearGrid() {
