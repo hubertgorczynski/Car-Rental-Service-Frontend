@@ -4,6 +4,7 @@ import com.carRental.domain.UserDto;
 import com.carRental.views.car.CarsView;
 import com.carRental.views.access.LogoutView;
 import com.carRental.views.externalApi.HereApiView;
+import com.carRental.views.externalApi.VinDecoderView;
 import com.carRental.views.rental.RentalsView;
 import com.carRental.views.user.UserAccountView;
 import com.carRental.views.user.UsersView;
@@ -27,6 +28,7 @@ public class MainView extends VerticalLayout {
     private final UserAccountView userAccountView;
     private final LogoutView logoutView;
     private final HereApiView hereApiView;
+    private final VinDecoderView vinDecoderView;
 
     private PagedTabs tabs = new PagedTabs();
     private Tab carsTab = new Tab("Cars");
@@ -34,18 +36,20 @@ public class MainView extends VerticalLayout {
     private Tab rentalsTab = new Tab("Rentals");
     private Tab userAccountTab = new Tab("User account");
     private Tab hereApiTab = new Tab("Agency searcher");
+    private Tab vinDecoderTab = new Tab("Vin decoder");
     private Tab logoutTab = new Tab();
 
     private UserDto loggedUserDto;
 
     @Autowired
     public MainView(CarsView carsView, UsersView usersView, RentalsView rentalsView, UserAccountView userAccountView,
-                    HereApiView hereApiView, LogoutView logoutView) {
+                    HereApiView hereApiView, VinDecoderView vinDecoderView, LogoutView logoutView) {
         this.carsView = carsView;
         this.usersView = usersView;
         this.rentalsView = rentalsView;
         this.userAccountView = userAccountView;
         this.hereApiView = hereApiView;
+        this.vinDecoderView = vinDecoderView;
         this.logoutView = logoutView;
 
         tabs.add(carsView, carsTab);
@@ -53,6 +57,7 @@ public class MainView extends VerticalLayout {
         tabs.add(rentalsView, rentalsTab);
         tabs.add(userAccountView, userAccountTab);
         tabs.add(hereApiView, hereApiTab);
+        tabs.add(vinDecoderView, vinDecoderTab);
         tabs.add(logoutView, logoutTab);
 
         Button logoutButton = createLogoutButton();
@@ -69,6 +74,7 @@ public class MainView extends VerticalLayout {
         rentalsView.refreshRentalsForAdmin();
         usersView.refreshUsers();
         hereApiView.clearGrid();
+        vinDecoderView.clearGrid();
     }
 
     public void userViewSetup(UserDto userDto) {
@@ -79,6 +85,7 @@ public class MainView extends VerticalLayout {
         rentalsView.refreshRentalsForUser(userDto);
         userAccountView.refreshForUser(userDto);
         hereApiView.clearGrid();
+        vinDecoderView.clearGrid();
     }
 
     public void setBackStartingTab() {
