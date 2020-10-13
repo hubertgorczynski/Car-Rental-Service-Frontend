@@ -1,4 +1,4 @@
-package com.carRental.domain.hereApi;
+package com.carRental.domain.hereApi.CarAgenciesSearcher;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,5 +1,6 @@
-package com.carRental.domain.hereApi;
+package com.carRental.domain.hereApi.CarAgenciesSearcher;
 
+import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyAddressDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,11 +13,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GeocodeResultDto {
+public class CarAgencyResultDto {
 
     @JsonProperty("title")
     private String title;
 
-    @JsonProperty("position")
-    private GeocodePositionDto position;
+    @JsonProperty("address")
+    private CarAgencyAddressDto address;
 }

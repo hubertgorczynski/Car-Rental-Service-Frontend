@@ -1,7 +1,10 @@
 package com.carRental.views.externalApi;
 
 import com.carRental.client.HereApiClient;
-import com.carRental.domain.hereApi.*;
+import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyComplexDto;
+import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyDto;
+import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyResultDto;
+import com.carRental.domain.hereApi.Geocode.CoordinatesDto;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;

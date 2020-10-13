@@ -1,9 +1,9 @@
 package com.carRental.client;
 
 import com.carRental.config.BackEndConfiguration;
-import com.carRental.domain.hereApi.CarAgencyDto;
-import com.carRental.domain.hereApi.CoordinatesDto;
-import com.carRental.domain.hereApi.GeocodeDto;
+import com.carRental.domain.hereApi.CarAgenciesSearcher.CarAgencyDto;
+import com.carRental.domain.hereApi.Geocode.CoordinatesDto;
+import com.carRental.domain.hereApi.Geocode.GeocodeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;

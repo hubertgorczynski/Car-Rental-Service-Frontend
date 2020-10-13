@@ -1,4 +1,4 @@
-package com.carRental.domain.hereApi;
+package com.carRental.domain.hereApi.CarAgenciesSearcher;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.carRental.domain.hereApi;
+package com.carRental.domain.hereApi.Geocode;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
