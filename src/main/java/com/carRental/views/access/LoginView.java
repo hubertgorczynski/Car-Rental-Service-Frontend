@@ -48,7 +48,7 @@ public class LoginView extends VerticalLayout {
         binder.writeBeanIfValid(loginDto);
         clearFields();
 
-        if (loginDto.getEmail().equals("admin@gmail.com") && (loginDto.getPassword().equals("admin"))) {
+        if (loginDto.getEmail().equals("admin") && (loginDto.getPassword().equals("admin"))) {
             mainView.adminViewSetup();
             mainView.setBackStartingTab();
             getUI().ifPresent(ui -> ui.navigate("mainView"));

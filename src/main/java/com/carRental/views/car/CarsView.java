@@ -178,8 +178,10 @@ public class CarsView extends VerticalLayout {
         });
         if (loggedUserDto != null) {
             rentalButton.setEnabled(true);
-        }
-        if (carDto.getStatus().equals(Status.RENTED)) {
+            if (carDto.getStatus().equals(Status.RENTED)) {
+                rentalButton.setEnabled(false);
+            }
+        } else {
             rentalButton.setEnabled(false);
         }
         return rentalButton;
