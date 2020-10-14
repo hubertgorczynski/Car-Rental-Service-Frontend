@@ -105,10 +105,6 @@ public class CarsView extends VerticalLayout {
 
         addCarButton.addClickListener(e -> addCarDialog.open());
 
-        carGrid.setHeightByRows(true);
-        carGrid.setMaxHeight("200px");
-        carGrid.setSizeFull();
-
         add(addCarButton, carGrid, addCarDialog);
     }
 
@@ -147,8 +143,13 @@ public class CarsView extends VerticalLayout {
 
     private Button createSaveCarButton() {
         return new Button("Save car", event -> {
-            binderForSavingCar.writeBeanIfValid(carDto);
-            saveCar(carDto);
+            if (areCreateCarFieldsFilled()) {
+                binderForSavingCar.writeBeanIfValid(carDto);
+                saveCar(carDto);
+            } else {
+                Dialog alertDialog = createAlertDialog();
+                alertDialog.open();
+            }
         });
     }
 
@@ -160,7 +161,11 @@ public class CarsView extends VerticalLayout {
             updateCarDialog.open();
         });
         if (loggedUserDto == null) {
-            updateButton.setEnabled(true);
+            if (carDto.getStatus().equals(Status.RENTED)) {
+                updateButton.setEnabled(false);
+            } else {
+                updateButton.setEnabled(true);
+            }
         } else {
             updateButton.setEnabled(false);
         }
@@ -169,11 +174,16 @@ public class CarsView extends VerticalLayout {
 
     private Button createConfirmUpdateButton() {
         return new Button("Confirm", event -> {
-            binderForUpdatingCar.writeBeanIfValid(carDto);
-            carDto.setId(carId);
-            carClient.updateCar(carDto);
-            refreshCarsForAdmin();
-            updateCarDialog.close();
+            if (areUpdatedCarFieldsFilled()) {
+                binderForUpdatingCar.writeBeanIfValid(carDto);
+                carDto.setId(carId);
+                carClient.updateCar(carDto);
+                refreshCarsForAdmin();
+                updateCarDialog.close();
+            } else {
+                Dialog alertDialog = createAlertDialog();
+                alertDialog.open();
+            }
         });
     }
 
@@ -212,7 +222,11 @@ public class CarsView extends VerticalLayout {
         Dialog confirmDeleteCarDialog = createDeleteCarDialog(carDto);
         Button deleteButton = new Button("Delete", event -> confirmDeleteCarDialog.open());
         if (loggedUserDto == null) {
-            deleteButton.setEnabled(true);
+            if (carDto.getStatus().equals(Status.RENTED)) {
+                deleteButton.setEnabled(false);
+            } else {
+                deleteButton.setEnabled(true);
+            }
         } else {
             deleteButton.setEnabled(false);
         }
@@ -240,6 +254,40 @@ public class CarsView extends VerticalLayout {
 
     private Button createCancelDeleteCarButton(Dialog dialog) {
         return new Button("Cancel", event -> dialog.close());
+    }
+
+    private boolean areCreateCarFieldsFilled() {
+        return (!vin.getValue().equals("") &&
+                !brand.getValue().equals("") &&
+                !model.getValue().equals("") &&
+                productionYear.getValue() != null &&
+                !fuelType.getValue().equals("") &&
+                engineCapacity.getValue() != null &&
+                !bodyClass.getValue().equals("") &&
+                mileage.getValue() != null &&
+                costPerDay.getValue() != null);
+    }
+
+    private boolean areUpdatedCarFieldsFilled() {
+        return (!vinUpdate.getValue().equals("") &&
+                !brandUpdate.getValue().equals("") &&
+                !modelUpdate.getValue().equals("") &&
+                productionYearUpdate.getValue() != null &&
+                !fuelTypeUpdate.getValue().equals("") &&
+                engineCapacityUpdate.getValue() != null &&
+                !bodyClassUpdate.getValue().equals("") &&
+                mileageUpdate.getValue() != null &&
+                costPerDayUpdate.getValue() != null);
+    }
+
+    private Dialog createAlertDialog() {
+        Dialog alertDialog = new Dialog();
+        VerticalLayout alertLayout = new VerticalLayout();
+        Button cancelAlertButton = new Button("Cancel", event -> alertDialog.close());
+        Label alertLabel = new Label("All fields must be filled!");
+        alertLayout.add(alertLabel, cancelAlertButton);
+        alertDialog.add(alertLayout);
+        return alertDialog;
     }
 
     private void setColumns() {

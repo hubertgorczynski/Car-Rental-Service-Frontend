@@ -5,6 +5,7 @@ import com.carRental.domain.UserDto;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -61,7 +62,8 @@ public class UsersView extends VerticalLayout {
             dialog.close();
             clearFields();
         } else {
-            System.out.println("User is already registered");
+            Dialog alertDialog = createUserAlreadyRegisteredDialog();
+            alertDialog.open();
         }
     }
 
@@ -71,9 +73,42 @@ public class UsersView extends VerticalLayout {
 
     private Button createSaveUserButton() {
         return new Button("Save user", event -> {
-            binder.writeBeanIfValid(userDto);
-            saveUser(userDto);
+            if (areFieldsFilled()) {
+                binder.writeBeanIfValid(userDto);
+                saveUser(userDto);
+            } else {
+                Dialog alertDialog = createEmptyFieldsDialog();
+                alertDialog.open();
+            }
         });
+    }
+
+    private boolean areFieldsFilled() {
+        return (!name.getValue().equals("") &&
+                !lastName.getValue().equals("") &&
+                !email.getValue().equals("") &&
+                !password.getValue().equals("") &&
+                phoneNumber.getValue() != null);
+    }
+
+    private Dialog createEmptyFieldsDialog() {
+        Dialog alertDialog = new Dialog();
+        VerticalLayout alertLayout = new VerticalLayout();
+        Button cancelAlertButton = new Button("Cancel", event -> alertDialog.close());
+        Label alertLabel = new Label("All fields must be filled!");
+        alertLayout.add(alertLabel, cancelAlertButton);
+        alertDialog.add(alertLayout);
+        return alertDialog;
+    }
+
+    private Dialog createUserAlreadyRegisteredDialog() {
+        Dialog alertDialog = new Dialog();
+        VerticalLayout alertLayout = new VerticalLayout();
+        Button cancelAlertButton = new Button("Cancel", event -> alertDialog.close());
+        Label alertLabel = new Label("User is already registered!");
+        alertLayout.add(alertLabel, cancelAlertButton);
+        alertDialog.add(alertLayout);
+        return alertDialog;
     }
 
     private void setColumns() {

@@ -21,7 +21,7 @@ public class UserAccountView extends VerticalLayout {
     private final UserClient userClient;
     private Binder<UserDto> binder = new Binder<>();
     private TextField name = new TextField("Name");
-    private TextField surname = new TextField("Last name");
+    private TextField lastName = new TextField("Last name");
     private TextField email = new TextField("Email address");
     private IntegerField phoneNumber = new IntegerField("Phone number");
     private TextField password = new TextField("Password");
@@ -41,7 +41,7 @@ public class UserAccountView extends VerticalLayout {
         Button updateUserButton = createUpdateUserButton();
         horizontalLayout.add(updateUserButton, deleteUserButton);
 
-        accountLayout.add(name, surname, email, phoneNumber, password, horizontalLayout);
+        accountLayout.add(name, lastName, email, phoneNumber, password, horizontalLayout);
 
         add(accountLayout);
         setHorizontalComponentAlignment(Alignment.CENTER, accountLayout);
@@ -95,10 +95,15 @@ public class UserAccountView extends VerticalLayout {
 
     private Button createConfirmUpdateUserButton(Dialog dialog) {
         return new Button("Modify", event -> {
-            if (binder.writeBeanIfValid(loggedUserDto)) {
-                updateUser(loggedUserDto);
+            if (areFieldsFilled()) {
+                if (binder.writeBeanIfValid(loggedUserDto)) {
+                    updateUser(loggedUserDto);
+                }
+                dialog.close();
+            } else {
+                Dialog alertDialog = createUpdateAlertDialog();
+                alertDialog.open();
             }
-            dialog.close();
         });
     }
 
@@ -116,12 +121,12 @@ public class UserAccountView extends VerticalLayout {
             userClient.deleteUser(userDto.getId());
             getUI().ifPresent(ui -> ui.navigate(""));
         } else {
-            Dialog alertDialog = createAlertDialog();
+            Dialog alertDialog = createDeleteAlertDialog();
             alertDialog.open();
         }
     }
 
-    private Dialog createAlertDialog() {
+    private Dialog createDeleteAlertDialog() {
         Dialog alertDialog = new Dialog();
         VerticalLayout alertLayout = new VerticalLayout();
         Button cancelAlertButton = new Button("Cancel", event -> alertDialog.close());
@@ -131,10 +136,28 @@ public class UserAccountView extends VerticalLayout {
         return alertDialog;
     }
 
+    private boolean areFieldsFilled() {
+        return (!name.getValue().equals("") &&
+                !lastName.getValue().equals("") &&
+                !email.getValue().equals("") &&
+                !password.getValue().equals("") &&
+                phoneNumber.getValue() != null);
+    }
+
+    private Dialog createUpdateAlertDialog() {
+        Dialog alertDialog = new Dialog();
+        VerticalLayout alertLayout = new VerticalLayout();
+        Button cancelAlertButton = new Button("Cancel", event -> alertDialog.close());
+        Label alertLabel = new Label("All fields must be filled!");
+        alertLayout.add(alertLabel, cancelAlertButton);
+        alertDialog.add(alertLayout);
+        return alertDialog;
+    }
+
     private void bindFields() {
         binder.forField(name)
                 .bind(UserDto::getName, UserDto::setName);
-        binder.forField(surname)
+        binder.forField(lastName)
                 .bind(UserDto::getLastName, UserDto::setLastName);
         binder.forField(email)
                 .bind(UserDto::getEmail, UserDto::setEmail);
