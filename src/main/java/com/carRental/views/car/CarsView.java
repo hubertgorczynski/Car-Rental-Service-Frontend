@@ -11,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -208,17 +209,37 @@ public class CarsView extends VerticalLayout {
     }
 
     private Button createDeleteButton(CarDto carDto) {
-        Button deleteButton = new Button("Delete");
-        deleteButton.addClickListener(e -> {
-            carClient.deleteCar(carDto.getId());
-            refreshCarsForAdmin();
-        });
+        Dialog confirmDeleteCarDialog = createDeleteCarDialog(carDto);
+        Button deleteButton = new Button("Delete", event -> confirmDeleteCarDialog.open());
         if (loggedUserDto == null) {
             deleteButton.setEnabled(true);
         } else {
             deleteButton.setEnabled(false);
         }
         return deleteButton;
+    }
+
+    private Dialog createDeleteCarDialog(CarDto carDto) {
+        Dialog confirmDeleteCarDialog = new Dialog();
+        VerticalLayout confirmationLayout = new VerticalLayout();
+        Button confirmDeleteCarButton = createConfirmDeleteCarButton(confirmDeleteCarDialog, carDto);
+        Button cancelDeleteCarButton = createCancelDeleteCarButton(confirmDeleteCarDialog);
+        Label confirmationLabel = new Label("Are You sure about deleting car from database?");
+        confirmationLayout.add(confirmationLabel, confirmDeleteCarButton, cancelDeleteCarButton);
+        confirmDeleteCarDialog.add(confirmationLayout);
+        return confirmDeleteCarDialog;
+    }
+
+    private Button createConfirmDeleteCarButton(Dialog dialog, CarDto carDto) {
+        return new Button("Delete", event -> {
+            carClient.deleteCar(carDto.getId());
+            refreshCarsForAdmin();
+            dialog.close();
+        });
+    }
+
+    private Button createCancelDeleteCarButton(Dialog dialog) {
+        return new Button("Cancel", event -> dialog.close());
     }
 
     private void setColumns() {

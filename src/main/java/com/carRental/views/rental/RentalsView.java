@@ -9,6 +9,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.Binder;
@@ -78,18 +79,27 @@ public class RentalsView extends VerticalLayout {
     }
 
     private Button createCloseRentalButton(RentalComplexDto rentalComplexDto) {
-        Dialog confirmCloseRentalDialog = new Dialog();
-        Button confirmCloseRentalButton = createConfirmCloseRentalButton(confirmCloseRentalDialog, rentalComplexDto);
-        Button cancelCloseRentalButton = createCancelConfirmationButton(confirmCloseRentalDialog);
-        confirmCloseRentalDialog.add(confirmCloseRentalButton, cancelCloseRentalButton);
+        Dialog confirmCloseRentalDialog = createCloseRentalDialog(rentalComplexDto);
 
         Button closeRentalButton = new Button("Close", event -> confirmCloseRentalDialog.open());
+
         if (loggedUserDto == null) {
             closeRentalButton.setEnabled(false);
         } else {
             closeRentalButton.setEnabled(true);
         }
         return closeRentalButton;
+    }
+
+    private Dialog createCloseRentalDialog(RentalComplexDto rentalComplexDto){
+        Dialog confirmCloseRentalDialog = new Dialog();
+        VerticalLayout confirmationLayout = new VerticalLayout();
+        Button confirmCloseRentalButton = createConfirmCloseRentalButton(confirmCloseRentalDialog, rentalComplexDto);
+        Button cancelCloseRentalButton = createCancelConfirmationButton(confirmCloseRentalDialog);
+        Label confirmationLabel = new Label("Are You sure about closing rental?");
+        confirmationLayout.add(confirmationLabel, confirmCloseRentalButton, cancelCloseRentalButton);
+        confirmCloseRentalDialog.add(confirmationLayout);
+        return confirmCloseRentalDialog;
     }
 
     private Button createConfirmCloseRentalButton(Dialog dialog, RentalComplexDto rentalComplexDto) {
