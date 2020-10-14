@@ -6,8 +6,6 @@ Application starts up on http://localhost:8081/
 
 Application has two types of views:
 1. For user -> You have to create account and then log in.
-2. For admin -> You Have to log in as:
-
-email: admin
-
+2. For admin -> You Have to log in as:\
+email: admin\
 password: admin
