@@ -41,7 +41,8 @@ public class RegistrationView extends VerticalLayout {
         Button loginButton = createLoginButton();
         Button registerButton = createRegisterButton();
 
-        add(welcomeTitle,spaceSpan, registrationTitle, name, lastName, email, password, phoneNumber, loginButton, registerButton);
+        add(welcomeTitle, spaceSpan, registrationTitle, name, lastName, email, password, phoneNumber, registerButton,
+                loginButton);
         setAlignItems(Alignment.CENTER);
     }
 
@@ -56,7 +57,7 @@ public class RegistrationView extends VerticalLayout {
     }
 
     private Button createLoginButton() {
-        return new Button("I have account. Log me in.", event ->
+        return new Button("I already have account. Log me in.", event ->
                 getUI().ifPresent(ui -> ui.navigate("loginView")));
     }
 

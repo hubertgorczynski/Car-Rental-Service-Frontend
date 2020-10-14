@@ -72,4 +72,10 @@ public class UserClient {
                 .build().encode().toUri();
         restTemplate.delete(url);
     }
+
+    public Boolean doesUserHaveNoRents(Long id) {
+        URI url = UriComponentsBuilder.fromHttpUrl(backEndConfiguration.getUserEndpoint() + "/hasNoRents/" + id)
+                .build().encode().toUri();
+        return restTemplate.getForObject(url, Boolean.class);
+    }
 }

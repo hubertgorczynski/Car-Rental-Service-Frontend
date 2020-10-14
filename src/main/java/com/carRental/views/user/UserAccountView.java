@@ -74,7 +74,6 @@ public class UserAccountView extends VerticalLayout {
         return new Button("Delete", event -> {
             deleteUser(loggedUserDto);
             dialog.close();
-            getUI().ifPresent(ui -> ui.navigate(""));
         });
     }
 
@@ -113,7 +112,23 @@ public class UserAccountView extends VerticalLayout {
     }
 
     private void deleteUser(UserDto userDto) {
-        userClient.deleteUser(userDto.getId());
+        if (userClient.doesUserHaveNoRents(userDto.getId())) {
+            userClient.deleteUser(userDto.getId());
+            getUI().ifPresent(ui -> ui.navigate(""));
+        } else {
+            Dialog alertDialog = createAlertDialog();
+            alertDialog.open();
+        }
+    }
+
+    private Dialog createAlertDialog() {
+        Dialog alertDialog = new Dialog();
+        VerticalLayout alertLayout = new VerticalLayout();
+        Button cancelAlertDialog = new Button("Cancel", event -> alertDialog.close());
+        Label alertLabel = new Label("You've got still opened rents. Deleting account is forbidden.");
+        alertLayout.add(alertLabel, cancelAlertDialog);
+        alertDialog.add(alertLayout);
+        return alertDialog;
     }
 
     private void bindFields() {
