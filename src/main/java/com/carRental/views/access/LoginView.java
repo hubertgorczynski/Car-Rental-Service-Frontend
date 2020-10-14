@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @UIScope
 @Component
-@Route(value = "")
+@Route(value = "loginView")
 public class LoginView extends VerticalLayout {
 
     private final MainView mainView;
@@ -69,8 +69,8 @@ public class LoginView extends VerticalLayout {
     }
 
     private Button createRegisterButton() {
-        return new Button("Create account", event -> {
-            getUI().ifPresent(ui -> ui.navigate("registrationView"));
+        return new Button("You don't have account? Create it here!", event -> {
+            getUI().ifPresent(ui -> ui.navigate(""));
             clearFields();
         });
     }
