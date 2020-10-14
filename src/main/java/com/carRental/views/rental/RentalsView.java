@@ -136,9 +136,9 @@ public class RentalsView extends VerticalLayout {
             modifyRentalDialog.open();
         });
         if (loggedUserDto == null) {
-            modifyRentalButton.setEnabled(true);
-        } else {
             modifyRentalButton.setEnabled(false);
+        } else {
+            modifyRentalButton.setEnabled(true);
         }
         return modifyRentalButton;
     }
