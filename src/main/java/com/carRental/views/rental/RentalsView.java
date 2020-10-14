@@ -78,16 +78,30 @@ public class RentalsView extends VerticalLayout {
     }
 
     private Button createCloseRentalButton(RentalComplexDto rentalComplexDto) {
-        Button closeRentalButton = new Button("Close", event -> {
-            rentalId = rentalComplexDto.getId();
-            closeRental(rentalId);
-        });
+        Dialog confirmCloseRentalDialog = new Dialog();
+        Button confirmCloseRentalButton = createConfirmCloseRentalButton(confirmCloseRentalDialog, rentalComplexDto);
+        Button cancelCloseRentalButton = createCancelConfirmationButton(confirmCloseRentalDialog);
+        confirmCloseRentalDialog.add(confirmCloseRentalButton, cancelCloseRentalButton);
+
+        Button closeRentalButton = new Button("Close", event -> confirmCloseRentalDialog.open());
         if (loggedUserDto == null) {
             closeRentalButton.setEnabled(false);
         } else {
             closeRentalButton.setEnabled(true);
         }
         return closeRentalButton;
+    }
+
+    private Button createConfirmCloseRentalButton(Dialog dialog, RentalComplexDto rentalComplexDto) {
+        return new Button("Confirm", event -> {
+            rentalId = rentalComplexDto.getId();
+            closeRental(rentalId);
+            dialog.close();
+        });
+    }
+
+    private Button createCancelConfirmationButton(Dialog dialog) {
+        return new Button("Cancel", event -> dialog.close());
     }
 
     private Button createExtendRentalButton(RentalComplexDto rentalComplexDto) {
