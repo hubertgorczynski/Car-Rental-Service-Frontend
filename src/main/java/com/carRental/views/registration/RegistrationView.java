@@ -44,7 +44,7 @@ public class RegistrationView extends VerticalLayout {
     private void save(UserDto userDto) {
         if (!userClient.isUserRegistered(userDto.getEmail())) {
             userClient.registerUser(userDto);
-            getUI().ifPresent(ui -> ui.navigate("loginView"));
+            getUI().ifPresent(ui -> ui.navigate(""));
             clearFields();
         } else {
             System.out.println("User is already registered");
@@ -53,7 +53,7 @@ public class RegistrationView extends VerticalLayout {
 
     private Button createLoginButton() {
         return new Button("I have account. Log me in.", event ->
-                getUI().ifPresent(ui -> ui.navigate("loginView")));
+                getUI().ifPresent(ui -> ui.navigate("")));
     }
 
     private Button createRegisterButton() {

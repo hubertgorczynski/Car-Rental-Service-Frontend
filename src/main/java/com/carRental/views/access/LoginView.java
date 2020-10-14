@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @UIScope
 @Component
-@Route("loginView")
+@Route(value = "")
 public class LoginView extends VerticalLayout {
 
     private final MainView mainView;

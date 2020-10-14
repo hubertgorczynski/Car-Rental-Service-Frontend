@@ -98,11 +98,15 @@ public class CarsView extends VerticalLayout {
 
         setColumns();
 
+        carGrid.addComponentColumn(this::createRentalButton);
         carGrid.addComponentColumn(this::createUpdateButton);
         carGrid.addComponentColumn(this::createDeleteButton);
-        carGrid.addComponentColumn(this::createRentalButton);
 
         addCarButton.addClickListener(e -> addCarDialog.open());
+
+        carGrid.setHeightByRows(true);
+        carGrid.setMaxHeight("200px");
+        carGrid.setSizeFull();
 
         add(addCarButton, carGrid, addCarDialog);
     }
@@ -154,7 +158,9 @@ public class CarsView extends VerticalLayout {
             binderForUpdatingCar.readBean(carDto);
             updateCarDialog.open();
         });
-        if (loggedUserDto != null) {
+        if (loggedUserDto == null) {
+            updateButton.setEnabled(true);
+        } else {
             updateButton.setEnabled(false);
         }
         return updateButton;
@@ -176,13 +182,14 @@ public class CarsView extends VerticalLayout {
             carId = carDto.getId();
             newRentalDialog.open();
         });
-        if (loggedUserDto != null) {
-            rentalButton.setEnabled(true);
+        if (loggedUserDto == null) {
+            rentalButton.setEnabled(false);
+        } else {
             if (carDto.getStatus().equals(Status.RENTED)) {
                 rentalButton.setEnabled(false);
+            } else {
+                rentalButton.setEnabled(true);
             }
-        } else {
-            rentalButton.setEnabled(false);
         }
         return rentalButton;
     }
@@ -206,7 +213,9 @@ public class CarsView extends VerticalLayout {
             carClient.deleteCar(carDto.getId());
             refreshCarsForAdmin();
         });
-        if (loggedUserDto != null) {
+        if (loggedUserDto == null) {
+            deleteButton.setEnabled(true);
+        } else {
             deleteButton.setEnabled(false);
         }
         return deleteButton;
@@ -214,7 +223,6 @@ public class CarsView extends VerticalLayout {
 
     private void setColumns() {
         carGrid.addColumn(CarDto::getId).setHeader("Id");
-        carGrid.addColumn(CarDto::getVin).setHeader("VIN");
         carGrid.addColumn(CarDto::getBrand).setHeader("Brand");
         carGrid.addColumn(CarDto::getModel).setHeader("Model");
         carGrid.addColumn(CarDto::getProductionYear).setHeader("Year");

@@ -25,7 +25,7 @@ public class LogoutView extends VerticalLayout {
 
     public void logOut() {
         logOutDialog.close();
-        getUI().ifPresent(ui -> ui.navigate("loginView"));
+        getUI().ifPresent(ui -> ui.navigate(""));
     }
 
     public void cancel() {

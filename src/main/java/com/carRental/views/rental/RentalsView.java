@@ -59,8 +59,8 @@ public class RentalsView extends VerticalLayout {
         setColumns();
 
         rentalGrid.addComponentColumn(this::createExtendRentalButton);
-        rentalGrid.addComponentColumn(this::createModifyRentalButton);
         rentalGrid.addComponentColumn(this::createCloseRentalButton);
+        rentalGrid.addComponentColumn(this::createModifyRentalButton);
 
         add(rentalGrid);
     }
@@ -78,10 +78,16 @@ public class RentalsView extends VerticalLayout {
     }
 
     private Button createCloseRentalButton(RentalComplexDto rentalComplexDto) {
-        return new Button("Close", event -> {
+        Button closeRentalButton = new Button("Close", event -> {
             rentalId = rentalComplexDto.getId();
             closeRental(rentalId);
         });
+        if (loggedUserDto == null) {
+            closeRentalButton.setEnabled(false);
+        } else {
+            closeRentalButton.setEnabled(true);
+        }
+        return closeRentalButton;
     }
 
     private Button createExtendRentalButton(RentalComplexDto rentalComplexDto) {
@@ -90,7 +96,9 @@ public class RentalsView extends VerticalLayout {
             rentalId = rentalComplexDto.getId();
             extendRentalDialog.open();
         });
-        if (loggedUserDto != null) {
+        if (loggedUserDto == null) {
+            extendRentalButton.setEnabled(false);
+        } else {
             extendRentalButton.setEnabled(true);
         }
         return extendRentalButton;
@@ -103,8 +111,10 @@ public class RentalsView extends VerticalLayout {
             carId = rentalComplexDto.getCarId();
             modifyRentalDialog.open();
         });
-        if (loggedUserDto != null) {
+        if (loggedUserDto == null) {
             modifyRentalButton.setEnabled(true);
+        } else {
+            modifyRentalButton.setEnabled(false);
         }
         return modifyRentalButton;
     }
@@ -147,7 +157,6 @@ public class RentalsView extends VerticalLayout {
         rentalGrid.addColumn(RentalComplexDto::getCarModel).setHeader("Model");
         rentalGrid.addColumn(RentalComplexDto::getUserName).setHeader("Name");
         rentalGrid.addColumn(RentalComplexDto::getUserLastName).setHeader("Surname");
-        rentalGrid.addColumn(RentalComplexDto::getUserEmail).setHeader("Email");
     }
 
     private void bindFields() {

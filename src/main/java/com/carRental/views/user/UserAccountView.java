@@ -65,7 +65,7 @@ public class UserAccountView extends VerticalLayout {
         return new Button("Confirm", event -> {
             deleteUser(loggedUserDto);
             dialog.close();
-            getUI().ifPresent(ui -> ui.navigate("loginView"));
+            getUI().ifPresent(ui -> ui.navigate(""));
         });
     }
 
