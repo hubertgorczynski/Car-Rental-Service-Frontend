@@ -6,6 +6,8 @@ import com.carRental.domain.LoginDto;
 import com.carRental.domain.UserDto;
 import com.carRental.views.MainView;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -59,9 +61,20 @@ public class LoginView extends VerticalLayout {
                 mainView.setBackStartingTab();
                 getUI().ifPresent(ui -> ui.navigate("mainView"));
             } else {
-                System.out.println("User does not exist");
+                Dialog invalidUserDialog = createInvalidUserDialog();
+                invalidUserDialog.open();
             }
         }
+    }
+
+    private Dialog createInvalidUserDialog() {
+        Dialog invalidUserDialog = new Dialog();
+        VerticalLayout invalidUserLayout = new VerticalLayout();
+        Button cancelInvalidDialogButton = new Button("Cancel", event -> invalidUserDialog.close());
+        Label invalidUserLabel = new Label("Incorrect email address or password!");
+        invalidUserLayout.add(invalidUserLabel, cancelInvalidDialogButton);
+        invalidUserDialog.add(invalidUserLayout);
+        return invalidUserDialog;
     }
 
     private Button createLoginButton() {

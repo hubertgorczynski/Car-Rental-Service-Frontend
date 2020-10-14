@@ -124,9 +124,9 @@ public class UserAccountView extends VerticalLayout {
     private Dialog createAlertDialog() {
         Dialog alertDialog = new Dialog();
         VerticalLayout alertLayout = new VerticalLayout();
-        Button cancelAlertDialog = new Button("Cancel", event -> alertDialog.close());
+        Button cancelAlertButton = new Button("Cancel", event -> alertDialog.close());
         Label alertLabel = new Label("You've got still opened rents. Deleting account is forbidden.");
-        alertLayout.add(alertLabel, cancelAlertDialog);
+        alertLayout.add(alertLabel, cancelAlertButton);
         alertDialog.add(alertLayout);
         return alertDialog;
     }
