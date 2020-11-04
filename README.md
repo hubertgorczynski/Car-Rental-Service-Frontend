@@ -1,5 +1,3 @@
-To acquire backend go to: https://github.com/hubertgorczynski/final-project-backend
-
 ## Car Rental Service - frontend
 
 Kodilla course - final project. WEB application of car rental service.
