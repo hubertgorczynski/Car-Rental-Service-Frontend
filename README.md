@@ -36,9 +36,3 @@ https://salty-mountain-66251.herokuapp.com/
 4. In page called "User account", You will find Your personal data (You can also modify them here). In this section You can delete Your account.
 5. In page called "Agency searcher" You can find the nearest car agencies in Your area. You just have to enter Your zip code.
 6. In page called "Vin decoder" You can check any car (not only from our database) information by entering its unique VIN number.
-
-### Extra feature
-You can log in as Administrator by using below login and pass. In admin mode You can see all users and theirs rentals.
-- Login: admin
-- Password: admin
-
